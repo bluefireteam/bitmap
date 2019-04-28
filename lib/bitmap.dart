@@ -62,3 +62,49 @@ class Bitmap {
     return resize(resizeWidth, resizeHeight);
   }
 }
+
+class BitmapFile {
+  BitmapFile(this._content) : _headerByteData = Uint8List(_headerSize) {
+    /// ARGB32 header
+    final ByteData bd = headerByteData.buffer.asByteData();
+    bd.setUint8(0x0, 0x42);
+    bd.setUint8(0x1, 0x4d);
+    bd.setInt32(0x2, fileLength, Endian.little);
+    bd.setInt32(0xa, _headerSize, Endian.little);
+
+    // info header
+    bd.setUint32(0xe, 108, Endian.little);
+    bd.setUint32(0x12, content.width, Endian.little);
+    bd.setUint32(0x16, -content.height, Endian.little);
+    bd.setUint16(0x1a, 1, Endian.little);
+    bd.setUint32(0x1c, 32, Endian.little); // pixel size
+    bd.setUint32(0x1e, 3, Endian.little); //BI_BITFIELDS
+    bd.setUint32(0x22, content.size, Endian.little);
+    bd.setUint32(0x36, 0x000000ff, Endian.little);
+    bd.setUint32(0x3a, 0x0000ff00, Endian.little);
+    bd.setUint32(0x3e, 0x00ff0000, Endian.little);
+    bd.setUint32(0x42, 0xff000000, Endian.little);
+  }
+
+  static const int _headerSize = 122;
+
+  final Uint8List _headerByteData;
+
+  Bitmap _content;
+
+  set contentByteData(Uint8List contentByteData) {
+    assert(contentByteData.length == content.size);
+    _content = Bitmap(content.width, content.height, contentByteData,
+        pixelLength: content.pixelLength);
+  }
+
+  Uint8List get headerByteData => _headerByteData;
+  int get fileLength => _headerSize + _content.size;
+  Bitmap get content => _content;
+
+  Uint8List get bitmapWithHeader {
+    return [_headerByteData, _content.contentByteData]
+        .expand((x) => x)
+        .toList();
+  }
+}

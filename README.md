@@ -1,14 +1,21 @@
-# bitmap
+# Flutter Bitmap
 
-A new Flutter package project.
 
-## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+A minimalist package to help you manipulate bitmaps. It is focused on bitmap transformations.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+The package standard format is ARGB32.
+
+For now, things like format encoding, exif and multi-frame images are not the concern of this package.
+
+For a full features image lib, check [`image`](https://pub.dartlang.org/packages/image).
+
+
+
+## Supported operations
+
+- flip vertical
+- flip horizontal
+- resize (nearest interpolation)
+
+

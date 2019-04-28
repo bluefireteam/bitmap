@@ -64,7 +64,9 @@ class Bitmap {
 }
 
 class BitmapFile {
-  BitmapFile(this._content) : _headerByteData = Uint8List(_headerSize) {
+  BitmapFile(this._content) {
+    _headerByteData = Uint8List(fileLength);
+
     /// ARGB32 header
     final ByteData bd = headerByteData.buffer.asByteData();
     bd.setUint8(0x0, 0x42);
@@ -88,8 +90,7 @@ class BitmapFile {
 
   static const int _headerSize = 122;
 
-  final Uint8List _headerByteData;
-
+  Uint8List _headerByteData;
   Bitmap _content;
 
   set contentByteData(Uint8List contentByteData) {
@@ -103,8 +104,7 @@ class BitmapFile {
   Bitmap get content => _content;
 
   Uint8List get bitmapWithHeader {
-    return [_headerByteData, _content.contentByteData]
-        .expand((x) => x)
-        .toList();
+    return Uint8List.fromList(_headerByteData)
+      ..setRange(_headerSize, fileLength, content.contentByteData);
   }
 }

@@ -18,4 +18,8 @@ For a full features image lib, check [`image`](https://pub.dartlang.org/packages
 - flip horizontal
 - resize (nearest interpolation)
 
-
+### Also We,ve added some filters based on the `image` package.
+- Contraste
+- Brightness
+- Saturation
+- Exposure

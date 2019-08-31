@@ -4,9 +4,14 @@ import 'dart:typed_data';
 
 import 'package:bitmap/flip.dart';
 import 'package:bitmap/resize.dart';
+import 'package:bitmap/filters.dart';
 
 class Bitmap {
   Bitmap(this.width, this.height, this.contentByteData, {this.pixelLength = 4});
+
+  Bitmap.blank(this.width, this.height, {this.pixelLength = 4})
+      : contentByteData =
+            Uint8List.fromList(List.filled(width * height * pixelLength, 0));
 
   final int pixelLength;
   final int width;
@@ -18,6 +23,11 @@ class Bitmap {
   Bitmap copy() {
     return Bitmap(width, height, Uint8List.fromList(contentByteData),
         pixelLength: pixelLength);
+  }
+
+  Bitmap shallowCopy([Uint8List contentByteData]) {
+    final _contentByteData = contentByteData ?? this.contentByteData;
+    return Bitmap(width, height, _contentByteData, pixelLength: pixelLength);
   }
 
   Future<Bitmap> flipVertical() async {
@@ -61,12 +71,51 @@ class Bitmap {
 
     return resize(resizeWidth, resizeHeight);
   }
+
+  Future<Bitmap> setContrast(double contrastRate) async {
+    final Bitmap copy = this.copy();
+    setContrastFunction(copy.contentByteData, contrastRate);
+
+    return copy;
+  }
+
+  Future<Bitmap> setBrightness(double brightnessRate) async {
+    final Bitmap copy = this.copy();
+    setBrightnessFunction(copy.contentByteData, brightnessRate);
+    return copy;
+  }
+
+  Future<Bitmap> adjustColor({
+    int blacks,
+    int whites,
+    double saturation,
+    double exposure,
+  }) async {
+    final Bitmap copy = this.copy();
+    adjustColorFunction(
+      copy.contentByteData,
+      blacks: blacks,
+      whites: whites,
+      saturation: saturation,
+      exposure: exposure,
+    );
+    return copy;
+  }
 }
 
 class BitmapFile {
   BitmapFile(this._content) {
     _headerByteData = Uint8List(fileLength);
+    _formateHeader();
+  }
 
+  BitmapFile.fromIntListWithHeader(int width, int height, Uint8List content) {
+    _headerByteData = content;
+    _content =
+        Bitmap(width, height, content.sublist(_headerSize, content.length));
+  }
+
+  void _formateHeader() {
     /// ARGB32 header
     final ByteData bd = headerByteData.buffer.asByteData();
     bd.setUint8(0x0, 0x42);

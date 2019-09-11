@@ -30,8 +30,8 @@ Future<Bitmap> resize(Bitmap bitmap, int resizeWidth, int resizeHeight) async {
   );
 
   resizeCore(
-    bitmap.contentByteData,
-    resized.contentByteData,
+    bitmap.content,
+    resized.content,
     width,
     height,
     resizeWidth,

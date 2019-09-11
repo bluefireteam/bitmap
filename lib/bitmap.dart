@@ -11,32 +11,28 @@ export 'transformations/brightness.dart';
 export 'transformations/contrast.dart';
 export 'transformations/flip.dart';
 
-const bitmapPixelLength = 4;
+const int bitmapPixelLength = 4;
+const int ARGB32HeaderSize = 122;
 
 class Bitmap {
-  Bitmap.fromHeadless(this.width, this.height, this.contentByteData) {
-    header = BitmapHeader(size, width, height);
-  }
-  Bitmap.from(this.width, this.height, Uint8List contentByteData) {
-    header = BitmapHeader(size, width, height)
-      ..headerByteData = contentByteData;
-    this.contentByteData = contentByteData.sublist(
-      header.size,
-      contentByteData.length,
-    );
-  }
+  Bitmap.fromHeadless(this.width, this.height, this.content);
+
+  Bitmap.fromHeaded(this.width, this.height, Uint8List headedIntList)
+      : content = headedIntList.sublist(
+          ARGB32HeaderSize,
+          headedIntList.length,
+        );
 
   Bitmap.blank(
     this.width,
     this.height,
-  ) : contentByteData = Uint8List.fromList(
+  ) : content = Uint8List.fromList(
           List.filled(width * height * bitmapPixelLength, 0),
         );
 
   final int width;
   final int height;
-  Uint8List contentByteData;
-  BitmapHeader header;
+  final Uint8List content;
 
   int get size => (width * height) * bitmapPixelLength;
 
@@ -44,7 +40,7 @@ class Bitmap {
     return Bitmap.fromHeadless(
       width,
       height,
-      Uint8List.fromList(contentByteData),
+      Uint8List.fromList(content),
     );
   }
 
@@ -68,40 +64,30 @@ class Bitmap {
 
   Future<ui.Image> buildImage() async {
     final Completer<ui.Image> imageCompleter = Completer();
-    ui.decodeImageFromList(withHeader, (ui.Image img) {
+    ui.decodeImageFromList(headedContent, (ui.Image img) {
       imageCompleter.complete(img);
     });
     return imageCompleter.future;
   }
 
-  Uint8List get withHeader {
-    return Uint8List.fromList(header.headerByteData)
-      ..setRange(
-        header.size,
-        header.fileLength,
-        contentByteData,
-      );
+  Uint8List get headedContent {
+    final header = ARGB32BitmapHeader(size, width, height)
+      ..applyContent(content);
+    return header.headerIntList;
   }
 }
 
-///
-class BitmapHeader {
-  BitmapHeader(this.contentSize, int width, int height) {
-    headerByteData = Uint8List(fileLength);
-    _formatHeader(width, height);
-  }
+/// the bitmap header
+class ARGB32BitmapHeader {
+  ARGB32BitmapHeader(this.contentSize, int width, int height) {
+    headerIntList = Uint8List(fileLength);
 
-  static const int _headerSize = 122;
-  int contentSize;
-  int get size => _headerSize;
-
-  void _formatHeader(int width, int height) {
     /// ARGB32 header
-    final ByteData bd = headerByteData.buffer.asByteData();
+    final ByteData bd = headerIntList.buffer.asByteData();
     bd.setUint8(0x0, 0x42);
     bd.setUint8(0x1, 0x4d);
     bd.setInt32(0x2, fileLength, Endian.little);
-    bd.setInt32(0xa, _headerSize, Endian.little);
+    bd.setInt32(0xa, ARGB32HeaderSize, Endian.little);
 
     // info header
     bd.setUint32(0xe, 108, Endian.little);
@@ -117,7 +103,17 @@ class BitmapHeader {
     bd.setUint32(0x42, 0xff000000, Endian.little);
   }
 
-  Uint8List headerByteData;
+  int contentSize;
 
-  int get fileLength => contentSize + size;
+  void applyContent(Uint8List contentIntList) {
+    headerIntList.setRange(
+      ARGB32HeaderSize,
+      fileLength,
+      contentIntList,
+    );
+  }
+
+  Uint8List headerIntList;
+
+  int get fileLength => contentSize + ARGB32HeaderSize;
 }

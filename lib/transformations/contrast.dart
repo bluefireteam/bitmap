@@ -4,7 +4,7 @@ import '../bitmap.dart';
 
 Bitmap contrast(Bitmap bitmap, double contrastRate) {
   final Bitmap copy = bitmap.copyHeadless();
-  contrastCore(copy.contentByteData, contrastRate);
+  contrastCore(copy.content, contrastRate);
 
   return copy;
 }

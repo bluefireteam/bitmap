@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bitmap/bitmap.dart';
-
-import 'dart:ui' as ui;
 
 void main() => runApp(MyApp());
 
@@ -42,23 +41,33 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void flipHImage() {
-    if (imageValueNotifier.value != null) imageValueNotifier.flipHImage();
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.flipHImage();
+    }
   }
 
   void flipVImage() {
-    if (imageValueNotifier.value != null) imageValueNotifier.flipVImage();
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.flipVImage();
+    }
   }
 
   void contrastImage() {
-    if (imageValueNotifier.value != null) imageValueNotifier.contrastImage();
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.contrastImage();
+    }
   }
 
   void brightnessImage() {
-    if (imageValueNotifier.value != null) imageValueNotifier.brightnessImage();
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.brightnessImage();
+    }
   }
 
   void adjustColorImage() {
-    if (imageValueNotifier.value != null) imageValueNotifier.adjustColorImage();
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.adjustColorImage();
+    }
   }
 
   @override
@@ -71,14 +80,20 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
             child: ValueListenableBuilder(
                 valueListenable: imageValueNotifier ?? ImageValueNotifier(),
-                builder: (BuildContext context, ui.Image value, Widget child) {
-                  if (value == null) return CircularProgressIndicator();
+                builder: (BuildContext context, Uint8List value, Widget child) {
+                  if (value == null) {
+                    return const CircularProgressIndicator();
+                  }
                   return Column(
                     children: <Widget>[
-                      RawImage(
-                        image: value,
+                      Image.memory(
+                        Bitmap.fromHeadless(
+                          imageValueNotifier.width,
+                          imageValueNotifier.height,
+                          value,
+                        ).headedContent,
                       ),
-                      Text("ImageSize ${value.width}")
+                      Text("ImageSize ${imageValueNotifier.width}")
                     ],
                   );
                 })),
@@ -95,25 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class Buttons extends StatelessWidget {
+  const Buttons({
+    Key key,
+    this.flipHImage,
+    this.flipVImage,
+    this.contrastImage,
+    this.brightnessImage,
+    this.adjustColorImage,
+  }) : super(key: key);
+
   final VoidCallback flipHImage;
   final VoidCallback flipVImage;
   final VoidCallback contrastImage;
   final VoidCallback brightnessImage;
   final VoidCallback adjustColorImage;
 
-  const Buttons(
-      {Key key,
-      this.flipHImage,
-      this.flipVImage,
-      this.contrastImage,
-      this.brightnessImage,
-      this.adjustColorImage})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -121,15 +136,15 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: flipHImage,
-                  child: Text("Flip horizontal"),
+                  child: const Text("Flip horizontal"),
                 ),
                 FlatButton(
                   onPressed: flipVImage,
-                  child: Text("Flip vertical"),
+                  child: const Text("Flip vertical"),
                 ),
                 FlatButton(
                   onPressed: contrastImage,
-                  child: Text("Contrast +"),
+                  child: const Text("Contrast +"),
                 ),
               ],
             ),
@@ -137,11 +152,11 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: brightnessImage,
-                  child: Text("Brightness +"),
+                  child: const Text("Brightness +"),
                 ),
                 FlatButton(
                   onPressed: adjustColorImage,
-                  child: Text("AdjustColor +"),
+                  child: const Text("AdjustColor +"),
                 ),
               ],
             ),
@@ -150,17 +165,21 @@ class Buttons extends StatelessWidget {
   }
 }
 
-class ImageValueNotifier extends ValueNotifier<ui.Image> {
+// stores headless contents
+class ImageValueNotifier extends ValueNotifier<Uint8List> {
   ImageValueNotifier() : super(null);
 
-  ui.Image initial = null;
+  Uint8List initial;
+
+  int width = 0;
+  int height = 0;
 
   void reset() {
     value = initial;
   }
 
-  void loadImage() {
-    const ImageProvider imageProvider = const AssetImage("assets/doggo.jpeg");
+  void loadImage() async {
+    const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
     final Completer completer = Completer<ImageInfo>();
     final ImageStream stream =
         imageProvider.resolve(const ImageConfiguration());
@@ -171,115 +190,93 @@ class ImageValueNotifier extends ValueNotifier<ui.Image> {
       }
     });
     stream.addListener(listener);
-    completer.future.then((info) {
-      ImageInfo imageInfo = info as ImageInfo;
-      value = imageInfo.image;
-      initial = value;
-    });
+    final imageInfo = await completer.future;
+    final ui.Image image = imageInfo.image;
+    width = image.width;
+    height = image.height;
+    final ByteData byteData = await image.toByteData();
+    final Uint8List listInt = byteData.buffer.asUint8List();
+    value = listInt;
+    initial = listInt;
   }
 
   void flipHImage() async {
-    ByteData byteData = await value.toByteData();
-    Uint8List listInt = byteData.buffer.asUint8List();
-
-    ui.Image temp = value;
+    final temp = value;
     value = null;
 
-    Uint8List converted =
-        await compute(flipHImageIsolate, [listInt, temp.width, temp.height]);
+    final Uint8List converted =
+        await compute(flipHImageIsolate, [temp, width, height]);
 
-    ui.decodeImageFromList(converted, (image) {
-      value = image;
-    });
+    value = converted;
   }
 
   void flipVImage() async {
-    ByteData byteData = await value.toByteData();
-    Uint8List listInt = byteData.buffer.asUint8List();
-
-    ui.Image temp = value;
+    final temp = value;
     value = null;
 
-    Uint8List converted =
-        await compute(flipVImageIsolate, [listInt, temp.width, temp.height]);
+    final converted = await compute(flipVImageIsolate, [temp, width, height]);
 
-    ui.decodeImageFromList(converted, (image) {
-      value = image;
-    });
+    value = converted;
   }
 
   void contrastImage() async {
-    ByteData byteData = await value.toByteData();
-    Uint8List listInt = byteData.buffer.asUint8List();
-
-    ui.Image temp = value;
+    final temp = value;
     value = null;
 
-    final Uint8List converted = await compute(contrastImageIsolate, [
-      listInt,
-      temp.width,
-      temp.height,
-    ]);
+    final Uint8List converted =
+        await compute(contrastImageIsolate, [temp, width, height]);
 
-    ui.decodeImageFromList(converted, (image) {
-      value = image;
-    });
+    value = converted;
   }
 
   void brightnessImage() async {
-    final ByteData byteData = await value.toByteData();
-    final Uint8List listInt = byteData.buffer.asUint8List();
-
-    ui.Image temp = value;
+    final temp = value;
     value = null;
 
+    final start = DateTime.now();
     final Uint8List converted = await compute(
-        brightnessImageIsolate, [listInt, temp.width, temp.height]);
+      brightnessImageIsolate,
+      [temp, width, height],
+    );
+    final end = DateTime.now();
 
-    ui.decodeImageFromList(converted, (image) {
-      value = image;
-    });
+    print(end.difference(start));
+
+    value = converted;
   }
 
   void adjustColorImage() async {
-    final ByteData byteData = await value.toByteData();
-    final Uint8List listInt = byteData.buffer.asUint8List();
-
-    ui.Image temp = value;
+    final temp = value;
     value = null;
 
-    final Uint8List converted = await compute(
-        adjustColorsImageIsolate, [listInt, temp.width, temp.height]);
+    final Uint8List converted =
+        await compute(adjustColorsImageIsolate, [temp, width, height]);
 
-    ui.decodeImageFromList(converted, (image) {
-      value = image;
-    });
+    value = converted;
   }
 }
 
 Future<Uint8List> flipHImageIsolate(List imageData) async {
-  Uint8List byteData = imageData[0];
-  int width = imageData[1];
-  int height = imageData[2];
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final returnBitmap = flipHorizontal(bigBitmap);
 
-  final Bitmap returnBitmap = flipHorizontal(bigBitmap);
-  ;
-
-  return returnBitmap.withHeader;
+  return returnBitmap.content;
 }
 
 Future<Uint8List> flipVImageIsolate(List imageData) async {
-  Uint8List byteData = imageData[0];
-  int width = imageData[1];
-  int height = imageData[2];
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
   final Bitmap returnBitmap = flipVertical(bigBitmap);
 
-  return returnBitmap.withHeader;
+  return returnBitmap.content;
 }
 
 Future<Uint8List> contrastImageIsolate(List imageData) async {
@@ -291,35 +288,35 @@ Future<Uint8List> contrastImageIsolate(List imageData) async {
 
   final returnBitmap = contrast(bigBitmap, 1.2);
 
-  return returnBitmap.withHeader;
+  return returnBitmap.content;
 }
 
 Future<Uint8List> brightnessImageIsolate(List imageData) async {
-  Uint8List byteData = imageData[0];
-  int width = imageData[1];
-  int height = imageData[2];
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
   final Bitmap returnBitmap = brightness(bigBitmap, 0.2);
 
-  return returnBitmap.withHeader;
-  ;
+  return returnBitmap.content;
 }
 
 Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
   final Uint8List byteData = imageData[0];
-  int width = imageData[1];
-  int height = imageData[2];
+  final int width = imageData[1];
+  final int height = imageData[2];
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = adjustColor(bigBitmap,
-      blacks: 0x00000000,
-      whites: 0x00FFFFFF,
-      saturation: 5.0, // 0 and 5 mid 1.0
-      exposure: 0.0 // 0 and 0.5 no mid
-      );
+  final Bitmap returnBitmap = adjustColor(
+    bigBitmap,
+    blacks: 0x00000000,
+    whites: 0x00FFFFFF,
+    saturation: 5.0, // 0 and 5 mid 1.0
+    exposure: 0.0, // 0 and 0.5 no mid
+  );
 
-  return returnBitmap.withHeader;
+  return returnBitmap.content;
 }

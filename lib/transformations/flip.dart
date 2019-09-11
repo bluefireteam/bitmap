@@ -6,7 +6,7 @@ Bitmap flipVertical(Bitmap bitmap) {
   final Bitmap copy = bitmap.copyHeadless();
   final width = bitmap.width;
   final height = bitmap.height;
-  final Uint8List copyContent = copy.contentByteData;
+  final Uint8List copyContent = copy.content;
 
   verticalFlipCore(copyContent, width, height);
 
@@ -42,7 +42,7 @@ Bitmap flipHorizontal(Bitmap bitmap) {
   final Bitmap copy = bitmap.copyHeadless();
   final width = bitmap.width;
   final height = bitmap.height;
-  final Uint8List copyContent = copy.contentByteData;
+  final Uint8List copyContent = copy.content;
 
   horizontalFlipCore(copyContent, width, height);
 

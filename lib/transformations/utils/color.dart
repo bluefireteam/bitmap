@@ -1,5 +1,3 @@
-import 'dart:math';
-
 /// Taken from dart image lib:
 /// All credits to Brendan Duncan: https://github.com/brendan-duncan/image
 

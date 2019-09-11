@@ -19,7 +19,7 @@ Bitmap adjustColor(
 }) {
   final Bitmap copy = bitmap.copyHeadless();
   adjustColorCore(
-    copy.contentByteData,
+    copy.content,
     blacks: blacks,
     whites: whites,
     saturation: saturation,
@@ -52,7 +52,7 @@ void adjustColorCore(
   }
 
   /// prep saturation
-  double invSaturation = saturation != null ? 1.0 - saturation : 0.0;
+  final invSaturation = saturation != null ? 1.0 - saturation : 0.0;
 
   /// prep Blacks whits mids
   if ((blacks != null && blacks != 0) || whites != null) {
@@ -80,7 +80,7 @@ void adjustColorCore(
 
     /// saturation
     if (saturation != null) {
-      double lum = r * lumCoeffR + g * lumCoeffG + b * lumCoeffB;
+      final lum = r * lumCoeffR + g * lumCoeffG + b * lumCoeffB;
 
       r = lum * invSaturation + r * saturation;
       g = lum * invSaturation + g * saturation;

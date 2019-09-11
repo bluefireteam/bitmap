@@ -1,49 +1,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'color.dart';
-
-/// This file: rip off of https://github.com/brendan-duncan/image/blob/master/lib/src/filter
-/// All credits to Brendan Duncan: https://github.com/brendan-duncan/image
-
-void setContrastFunction(Uint8List sourceBmp, double contrastRate) {
-  assert(contrastRate >= 0.0);
-  assert(sourceBmp != null);
-
-  final double contrastSquare = contrastRate * contrastRate;
-  final Uint8List contrastApplier = Uint8List(256);
-  for (int i = 0; i < 256; ++i) {
-    contrastApplier[i] =
-        ((((((i / 255.0) - 0.5) * contrastSquare) + 0.5) * 255.0).toInt())
-            .clamp(0, 255)
-            .toInt();
-  }
-  final size = sourceBmp.length;
-  for (int i = 0; i < size; i += 4) {
-    sourceBmp[i] = contrastApplier[sourceBmp[i]];
-    sourceBmp[i + 1] = contrastApplier[sourceBmp[i + 1]];
-    sourceBmp[i + 2] = contrastApplier[sourceBmp[i + 2]];
-  }
-}
-
-/// Changes brightness of [sourceBmp] accordingly to [brightnessRate] .
-///
-/// [brightnessRate] Can be between -1.0 and 1.0. 0.0 does nothing;
-void setBrightnessFunction(Uint8List sourceBmp, double brightnessRate) {
-  assert(brightnessRate >= -1.0 && brightnessRate <= 1.0);
-  assert(sourceBmp != null);
-
-  if (brightnessRate == 0.0) return;
-
-  final brightness = brightnessRate * 255;
-
-  final size = sourceBmp.length;
-  for (int i = 0; i < size; i += 4) {
-    sourceBmp[i] = clamp255(sourceBmp[i] + brightness);
-    sourceBmp[i + 1] = clamp255(sourceBmp[i + 1] + brightness);
-    sourceBmp[i + 2] = clamp255(sourceBmp[i + 2] + brightness);
-  }
-}
+import '../bitmap.dart';
+import 'utils/color.dart';
 
 const DEG_TO_RAD = 0.0174532925;
 
@@ -51,12 +10,35 @@ const lumCoeffR = 0.2125;
 const lumCoeffG = 0.7154;
 const lumCoeffB = 0.0721;
 
+Bitmap adjustColor(
+  Bitmap bitmap, {
+  int blacks,
+  int whites,
+  double saturation,
+  double exposure,
+}) {
+  final Bitmap copy = bitmap.copyHeadless();
+  adjustColorCore(
+    copy.contentByteData,
+    blacks: blacks,
+    whites: whites,
+    saturation: saturation,
+    exposure: exposure,
+  );
+  return copy;
+}
+
 /// Adjusts a lot of stuff of color
-void adjustColorFunction(Uint8List sourceBmp,
-    {int blacks, int whites, double saturation, double exposure}) {
+void adjustColorCore(
+  Uint8List sourceBmp, {
+  int blacks,
+  int whites,
+  double saturation,
+  double exposure,
+}) {
   if ((exposure == null || exposure == 0.0) &&
       (blacks == null || blacks == 0) &&
-      (whites == null || whites == 0xFFFFFF) &&
+      (whites == null || whites == 0x00FFFFFF) &&
       saturation == null) {
     return;
   }

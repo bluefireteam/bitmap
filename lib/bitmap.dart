@@ -1,121 +1,101 @@
 library bitmap;
 
+import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
-import 'package:bitmap/flip.dart';
-import 'package:bitmap/resize.dart';
-import 'package:bitmap/filters.dart';
+import 'package:flutter/rendering.dart';
+
+export 'transformations/adjust_color.dart';
+export 'transformations/brightness.dart';
+export 'transformations/contrast.dart';
+export 'transformations/flip.dart';
+
+const bitmapPixelLength = 4;
 
 class Bitmap {
-  Bitmap(this.width, this.height, this.contentByteData, {this.pixelLength = 4});
+  Bitmap.fromHeadless(this.width, this.height, this.contentByteData) {
+    header = BitmapHeader(size, width, height);
+  }
+  Bitmap.from(this.width, this.height, Uint8List contentByteData) {
+    header = BitmapHeader(size, width, height)
+      ..headerByteData = contentByteData;
+    this.contentByteData = contentByteData.sublist(
+      header.size,
+      contentByteData.length,
+    );
+  }
 
-  Bitmap.blank(this.width, this.height, {this.pixelLength = 4})
-      : contentByteData =
-            Uint8List.fromList(List.filled(width * height * pixelLength, 0));
+  Bitmap.blank(
+    this.width,
+    this.height,
+  ) : contentByteData = Uint8List.fromList(
+          List.filled(width * height * bitmapPixelLength, 0),
+        );
 
-  final int pixelLength;
   final int width;
   final int height;
-  final Uint8List contentByteData;
+  Uint8List contentByteData;
+  BitmapHeader header;
 
-  int get size => (width * height) * pixelLength;
+  int get size => (width * height) * bitmapPixelLength;
 
-  Bitmap copy() {
-    return Bitmap(width, height, Uint8List.fromList(contentByteData),
-        pixelLength: pixelLength);
-  }
-
-  Bitmap shallowCopy([Uint8List contentByteData]) {
-    final _contentByteData = contentByteData ?? this.contentByteData;
-    return Bitmap(width, height, _contentByteData, pixelLength: pixelLength);
-  }
-
-  Future<Bitmap> flipVertical() async {
-    final Bitmap copy = this.copy();
-    final Uint8List copyContent = copy.contentByteData;
-
-    verticalFlip(copyContent, width, height, pixelLength);
-
-    return copy;
-  }
-
-  Future<Bitmap> flipHorizontal() async {
-    final Bitmap copy = this.copy();
-    final Uint8List copyContent = copy.contentByteData;
-
-    horizontalFlip(copyContent, width, height, pixelLength);
-
-    return copy;
-  }
-
-  Future<Bitmap> resize(int resizeWidth, int resizeHeight) async {
-    final int newBitmapSize = (resizeWidth * resizeHeight) * pixelLength;
-
-    final Bitmap resized = Bitmap(
-        resizeWidth, resizeHeight, Uint8List(newBitmapSize),
-        pixelLength: pixelLength);
-
-    resizeBitmap(contentByteData, resized.contentByteData, pixelLength, width,
-        height, resizeWidth, resizeHeight);
-
-    return resized;
-  }
-
-  Future<Bitmap> resizeHeight(int resizeHeight) async {
-    final int resizeWidth = (resizeHeight * (width / height)).toInt();
-    return resize(resizeWidth, resizeHeight);
-  }
-
-  Future<Bitmap> resizeWidth(int resizeWidth) async {
-    final int resizeHeight = (resizeWidth * (height / width)).toInt();
-
-    return resize(resizeWidth, resizeHeight);
-  }
-
-  Future<Bitmap> setContrast(double contrastRate) async {
-    final Bitmap copy = this.copy();
-    setContrastFunction(copy.contentByteData, contrastRate);
-
-    return copy;
-  }
-
-  Future<Bitmap> setBrightness(double brightnessRate) async {
-    final Bitmap copy = this.copy();
-    setBrightnessFunction(copy.contentByteData, brightnessRate);
-    return copy;
-  }
-
-  Future<Bitmap> adjustColor({
-    int blacks,
-    int whites,
-    double saturation,
-    double exposure,
-  }) async {
-    final Bitmap copy = this.copy();
-    adjustColorFunction(
-      copy.contentByteData,
-      blacks: blacks,
-      whites: whites,
-      saturation: saturation,
-      exposure: exposure,
+  Bitmap copyHeadless() {
+    return Bitmap.fromHeadless(
+      width,
+      height,
+      Uint8List.fromList(contentByteData),
     );
-    return copy;
+  }
+
+  static Future<Bitmap> fromProvider(ImageProvider provider) async {
+    final Completer completer = Completer<ImageInfo>();
+    final ImageStream stream = provider.resolve(const ImageConfiguration());
+    final listener =
+        ImageStreamListener((ImageInfo info, bool synchronousCall) {
+      if (!completer.isCompleted) {
+        completer.complete(info);
+      }
+    });
+    stream.addListener(listener);
+    final imageInfo = await completer.future;
+    final ui.Image image = imageInfo.image;
+    final ByteData byteData = await image.toByteData();
+    final Uint8List listInt = byteData.buffer.asUint8List();
+
+    return Bitmap.fromHeadless(image.width, image.height, listInt);
+  }
+
+  Future<ui.Image> buildImage() async {
+    final Completer<ui.Image> imageCompleter = Completer();
+    ui.decodeImageFromList(withHeader, (ui.Image img) {
+      imageCompleter.complete(img);
+    });
+    return imageCompleter.future;
+  }
+
+  Uint8List get withHeader {
+    return Uint8List.fromList(header.headerByteData)
+      ..setRange(
+        header.size,
+        header.fileLength,
+        contentByteData,
+      );
   }
 }
 
-class BitmapFile {
-  BitmapFile(this._content) {
-    _headerByteData = Uint8List(fileLength);
-    _formateHeader();
+///
+class BitmapHeader {
+  BitmapHeader(this.contentSize, int width, int height) {
+    headerByteData = Uint8List(fileLength);
+    _formatHeader(width, height);
   }
 
-  BitmapFile.fromIntListWithHeader(int width, int height, Uint8List content) {
-    _headerByteData = content;
-    _content =
-        Bitmap(width, height, content.sublist(_headerSize, content.length));
-  }
+  static const int _headerSize = 122;
+  int contentSize;
+  int get size => _headerSize;
 
-  void _formateHeader() {
+  void _formatHeader(int width, int height) {
     /// ARGB32 header
     final ByteData bd = headerByteData.buffer.asByteData();
     bd.setUint8(0x0, 0x42);
@@ -125,35 +105,19 @@ class BitmapFile {
 
     // info header
     bd.setUint32(0xe, 108, Endian.little);
-    bd.setUint32(0x12, content.width, Endian.little);
-    bd.setUint32(0x16, -content.height, Endian.little);
+    bd.setUint32(0x12, width, Endian.little);
+    bd.setUint32(0x16, -height, Endian.little);
     bd.setUint16(0x1a, 1, Endian.little);
     bd.setUint32(0x1c, 32, Endian.little); // pixel size
     bd.setUint32(0x1e, 3, Endian.little); //BI_BITFIELDS
-    bd.setUint32(0x22, content.size, Endian.little);
+    bd.setUint32(0x22, contentSize, Endian.little);
     bd.setUint32(0x36, 0x000000ff, Endian.little);
     bd.setUint32(0x3a, 0x0000ff00, Endian.little);
     bd.setUint32(0x3e, 0x00ff0000, Endian.little);
     bd.setUint32(0x42, 0xff000000, Endian.little);
   }
 
-  static const int _headerSize = 122;
+  Uint8List headerByteData;
 
-  Uint8List _headerByteData;
-  Bitmap _content;
-
-  set contentByteData(Uint8List contentByteData) {
-    assert(contentByteData.length == content.size);
-    _content = Bitmap(content.width, content.height, contentByteData,
-        pixelLength: content.pixelLength);
-  }
-
-  Uint8List get headerByteData => _headerByteData;
-  int get fileLength => _headerSize + _content.size;
-  Bitmap get content => _content;
-
-  Uint8List get bitmapWithHeader {
-    return Uint8List.fromList(_headerByteData)
-      ..setRange(_headerSize, fileLength, content.contentByteData);
-  }
+  int get fileLength => contentSize + size;
 }

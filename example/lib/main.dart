@@ -262,11 +262,12 @@ Future<Uint8List> flipHImageIsolate(List imageData) async {
   int width = imageData[1];
   int height = imageData[2];
 
-  final Bitmap bigBitmap = Bitmap(width, height, byteData);
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = await bigBitmap.flipHorizontal();
+  final Bitmap returnBitmap = flipHorizontal(bigBitmap);
+  ;
 
-  return BitmapFile(returnBitmap).bitmapWithHeader;
+  return returnBitmap.withHeader;
 }
 
 Future<Uint8List> flipVImageIsolate(List imageData) async {
@@ -274,23 +275,23 @@ Future<Uint8List> flipVImageIsolate(List imageData) async {
   int width = imageData[1];
   int height = imageData[2];
 
-  final Bitmap bigBitmap = Bitmap(width, height, byteData);
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = await bigBitmap.flipVertical();
+  final Bitmap returnBitmap = flipVertical(bigBitmap);
 
-  return BitmapFile(returnBitmap).bitmapWithHeader;
+  return returnBitmap.withHeader;
 }
 
 Future<Uint8List> contrastImageIsolate(List imageData) async {
-  Uint8List byteData = imageData[0];
-  int width = imageData[1];
-  int height = imageData[2];
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
 
-  final Bitmap bigBitmap = Bitmap(width, height, byteData);
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = await bigBitmap.setContrast(1.2);
+  final returnBitmap = contrast(bigBitmap, 1.2);
 
-  return BitmapFile(returnBitmap).bitmapWithHeader;
+  return returnBitmap.withHeader;
 }
 
 Future<Uint8List> brightnessImageIsolate(List imageData) async {
@@ -298,26 +299,27 @@ Future<Uint8List> brightnessImageIsolate(List imageData) async {
   int width = imageData[1];
   int height = imageData[2];
 
-  final Bitmap bigBitmap = Bitmap(width, height, byteData);
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = await bigBitmap.setBrightness(0.2);
+  final Bitmap returnBitmap = brightness(bigBitmap, 0.2);
 
-  return BitmapFile(returnBitmap).bitmapWithHeader;
+  return returnBitmap.withHeader;
+  ;
 }
 
 Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
-  Uint8List byteData = imageData[0];
+  final Uint8List byteData = imageData[0];
   int width = imageData[1];
   int height = imageData[2];
 
-  final Bitmap bigBitmap = Bitmap(width, height, byteData);
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = await bigBitmap.adjustColor(
-      //blacks: 0x00000000,
-      //whites: 0x00FFFFFF,
-      //saturation: 5.0, // 0 and 5 mid 1.0
-      //exposure:  0.0 // 0 and 0.5 no mid
+  final Bitmap returnBitmap = adjustColor(bigBitmap,
+      blacks: 0x00000000,
+      whites: 0x00FFFFFF,
+      saturation: 5.0, // 0 and 5 mid 1.0
+      exposure: 0.0 // 0 and 0.5 no mid
       );
 
-  return BitmapFile(returnBitmap).bitmapWithHeader;
+  return returnBitmap.withHeader;
 }

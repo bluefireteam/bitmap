@@ -78,25 +78,23 @@ class _MyHomePageState extends State<MyHomePage> {
           imageValueNotifier.reset();
         },
         child: Center(
-            child: ValueListenableBuilder(
-                valueListenable: imageValueNotifier ?? ImageValueNotifier(),
-                builder: (BuildContext context, Uint8List value, Widget child) {
-                  if (value == null) {
-                    return const CircularProgressIndicator();
-                  }
-                  return Column(
-                    children: <Widget>[
-                      Image.memory(
-                        Bitmap.fromHeadless(
-                          imageValueNotifier.width,
-                          imageValueNotifier.height,
-                          value,
-                        ).headedContent,
-                      ),
-                      Text("ImageSize ${imageValueNotifier.width}")
-                    ],
-                  );
-                })),
+          child: ValueListenableBuilder<Bitmap>(
+            valueListenable: imageValueNotifier ?? ImageValueNotifier(),
+            builder: (BuildContext context, Bitmap bitmap, Widget child) {
+              if (bitmap == null) {
+                return const CircularProgressIndicator();
+              }
+              return Column(
+                children: <Widget>[
+                  Image.memory(
+                    bitmap.buildHeaded(),
+                  ),
+                  Text("ImageSize ${bitmap.width}")
+                ],
+              );
+            },
+          ),
+        ),
       ),
       floatingActionButton: Buttons(
         flipHImage: flipHImage,
@@ -166,13 +164,10 @@ class Buttons extends StatelessWidget {
 }
 
 // stores headless contents
-class ImageValueNotifier extends ValueNotifier<Uint8List> {
+class ImageValueNotifier extends ValueNotifier<Bitmap> {
   ImageValueNotifier() : super(null);
 
-  Uint8List initial;
-
-  int width = 0;
-  int height = 0;
+  Bitmap initial;
 
   void reset() {
     value = initial;
@@ -180,53 +175,39 @@ class ImageValueNotifier extends ValueNotifier<Uint8List> {
 
   void loadImage() async {
     const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
-    final Completer completer = Completer<ImageInfo>();
-    final ImageStream stream =
-        imageProvider.resolve(const ImageConfiguration());
-    final listener =
-        ImageStreamListener((ImageInfo info, bool synchronousCall) {
-      if (!completer.isCompleted) {
-        completer.complete(info);
-      }
-    });
-    stream.addListener(listener);
-    final imageInfo = await completer.future;
-    final ui.Image image = imageInfo.image;
-    width = image.width;
-    height = image.height;
-    final ByteData byteData = await image.toByteData();
-    final Uint8List listInt = byteData.buffer.asUint8List();
-    value = listInt;
-    initial = listInt;
+
+    value = await Bitmap.fromProvider(imageProvider);
+    initial = value;
   }
 
   void flipHImage() async {
     final temp = value;
     value = null;
 
-    final Uint8List converted =
-        await compute(flipHImageIsolate, [temp, width, height]);
+    final Uint8List converted = await compute(
+        flipHImageIsolate, [temp.content, temp.width, temp.height]);
 
-    value = converted;
+    value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
   void flipVImage() async {
     final temp = value;
     value = null;
 
-    final converted = await compute(flipVImageIsolate, [temp, width, height]);
+    final converted = await compute(
+        flipVImageIsolate, [temp.content, temp.width, temp.height]);
 
-    value = converted;
+    value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
   void contrastImage() async {
     final temp = value;
     value = null;
 
-    final Uint8List converted =
-        await compute(contrastImageIsolate, [temp, width, height]);
+    final Uint8List converted = await compute(
+        contrastImageIsolate, [temp.content, temp.width, temp.height]);
 
-    value = converted;
+    value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
   void brightnessImage() async {
@@ -236,23 +217,23 @@ class ImageValueNotifier extends ValueNotifier<Uint8List> {
     final start = DateTime.now();
     final Uint8List converted = await compute(
       brightnessImageIsolate,
-      [temp, width, height],
+      [temp.content, temp.width, temp.height],
     );
     final end = DateTime.now();
 
     print(end.difference(start));
 
-    value = converted;
+    value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
   void adjustColorImage() async {
     final temp = value;
     value = null;
 
-    final Uint8List converted =
-        await compute(adjustColorsImageIsolate, [temp, width, height]);
+    final Uint8List converted = await compute(
+        adjustColorsImageIsolate, [temp.content, temp.width, temp.height]);
 
-    value = converted;
+    value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 }
 

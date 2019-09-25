@@ -64,13 +64,14 @@ class Bitmap {
 
   Future<ui.Image> buildImage() async {
     final Completer<ui.Image> imageCompleter = Completer();
+    final headedContent = buildHeaded();
     ui.decodeImageFromList(headedContent, (ui.Image img) {
       imageCompleter.complete(img);
     });
     return imageCompleter.future;
   }
 
-  Uint8List get headedContent {
+  Uint8List buildHeaded() {
     final header = ARGB32BitmapHeader(size, width, height)
       ..applyContent(content);
     return header.headerIntList;

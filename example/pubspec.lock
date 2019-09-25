@@ -23,7 +23,7 @@ packages:
     source: hosted
     version: "2.3.0"
   bitmap:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       path: ".."
       relative: true

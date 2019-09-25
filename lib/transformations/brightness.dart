@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:bitmap/ffi.dart';
+
 import '../bitmap.dart';
 import 'utils/color.dart';
 
@@ -20,12 +22,14 @@ void brightnessCore(Uint8List sourceBmp, double brightnessRate) {
     return;
   }
 
-  final brightness = brightnessRate * 255;
+  final brightness = (brightnessRate * 255).toInt();
+
+
 
   final size = sourceBmp.length;
   for (int i = 0; i < size; i += 4) {
-    sourceBmp[i] = clamp255(sourceBmp[i] + brightness);
-    sourceBmp[i + 1] = clamp255(sourceBmp[i + 1] + brightness);
-    sourceBmp[i + 2] = clamp255(sourceBmp[i + 2] + brightness);
+    sourceBmp[i] = clamp255Int(nativeSum(sourceBmp[i], brightness));
+    sourceBmp[i + 1] = clamp255Int(nativeSum(sourceBmp[i + 1], brightness));
+    sourceBmp[i + 2] = clamp255Int(nativeSum(sourceBmp[i + 2], brightness));
   }
 }

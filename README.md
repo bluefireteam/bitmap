@@ -77,6 +77,7 @@ Bitmap nowThisBitmapLooksWeird = bmp.contrast(brightBitmap, 1.5);
 Bitmap finalBitmap = bmp.adjustColor(nowThisBitmapLooksWeird, saturation: 1.0);
 ```
 
+<<<<<<< HEAD
 ### 3. Displaying/saving/painting the output
 
 ## Performance improvements and Dart FFI
@@ -109,6 +110,9 @@ All Bitmap FFI experiments are being tested in [this branch](https://github.com/
 - Flip vertical
 - Flip horizontal
 - Resize (nearest interpolation)
+=======
+### Also We,ve added some filters based on the `image` package.
+>>>>>>> transform into plugin
 - Contrast
 - Brightness
 - Saturation

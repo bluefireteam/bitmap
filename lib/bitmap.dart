@@ -12,14 +12,14 @@ export 'transformations/contrast.dart';
 export 'transformations/flip.dart';
 
 const int bitmapPixelLength = 4;
-const int ARGB32HeaderSize = 122;
+const int RGBA32HeaderSize = 122;
 
 class Bitmap {
   Bitmap.fromHeadless(this.width, this.height, this.content);
 
   Bitmap.fromHeaded(this.width, this.height, Uint8List headedIntList)
       : content = headedIntList.sublist(
-          ARGB32HeaderSize,
+          RGBA32HeaderSize,
           headedIntList.length,
         );
 
@@ -36,7 +36,7 @@ class Bitmap {
 
   int get size => (width * height) * bitmapPixelLength;
 
-  Bitmap copyHeadless() {
+  Bitmap cloneHeadless() {
     return Bitmap.fromHeadless(
       width,
       height,
@@ -72,25 +72,22 @@ class Bitmap {
   }
 
   Uint8List buildHeaded() {
-    final header = ARGB32BitmapHeader(size, width, height)
+    final header = RGBA32BitmapHeader(size, width, height)
       ..applyContent(content);
     return header.headerIntList;
   }
 }
 
-/// the bitmap header
-class ARGB32BitmapHeader {
-  ARGB32BitmapHeader(this.contentSize, int width, int height) {
+class RGBA32BitmapHeader {
+  RGBA32BitmapHeader(this.contentSize, int width, int height) {
     headerIntList = Uint8List(fileLength);
 
-    /// ARGB32 header
     final ByteData bd = headerIntList.buffer.asByteData();
     bd.setUint8(0x0, 0x42);
     bd.setUint8(0x1, 0x4d);
     bd.setInt32(0x2, fileLength, Endian.little);
-    bd.setInt32(0xa, ARGB32HeaderSize, Endian.little);
+    bd.setInt32(0xa, RGBA32HeaderSize, Endian.little);
 
-    // info header
     bd.setUint32(0xe, 108, Endian.little);
     bd.setUint32(0x12, width, Endian.little);
     bd.setUint32(0x16, -height, Endian.little);
@@ -108,7 +105,7 @@ class ARGB32BitmapHeader {
 
   void applyContent(Uint8List contentIntList) {
     headerIntList.setRange(
-      ARGB32HeaderSize,
+      RGBA32HeaderSize,
       fileLength,
       contentIntList,
     );
@@ -116,5 +113,5 @@ class ARGB32BitmapHeader {
 
   Uint8List headerIntList;
 
-  int get fileLength => contentSize + ARGB32HeaderSize;
+  int get fileLength => contentSize + RGBA32HeaderSize;
 }

@@ -1,6 +1,5 @@
 /// Taken from dart image lib:
-/// All credits to Brendan Duncan: https://github.com/brendan-duncan/image
-
+/// Some credits to Brendan Duncan: https://github.com/brendan-duncan/image
 int clamp255(double x) => x.clamp(0, 255).toInt();
 
 int getRed(int color) => color & 0xff;

@@ -4,7 +4,7 @@ import '../bitmap.dart';
 import 'utils/color.dart';
 
 Bitmap brightness(Bitmap bitmap, double brightnessRate) {
-  final Bitmap copy = bitmap.copyHeadless();
+  final Bitmap copy = bitmap.cloneHeadless();
   brightnessCore(copy.content, brightnessRate);
   return copy;
 }

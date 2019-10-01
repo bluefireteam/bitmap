@@ -1,25 +1,37 @@
-# WIP: Flutter Bitmap
+# Flutter Bitmap
 
+A minimalist flutter package to help you manipulate bitmaps.
+The focus here is to prove bitmap manipulations.
 
+The package standard format is RGBA32.
 
-A minimalist package to help you manipulate bitmaps. It is focused on bitmap transformations.
+For now, things like format encoding, exif and multi-frame images are not the concern of this package. If that is your need, check [`image`](https://pub.dartlang.org/packages/image). Some of the algorithms are heavily inpired by this awesome lib.
 
-The package standard format is ARGB32.
+## Why?
 
-For now, things like format encoding, exif and multi-frame images are not the concern of this package.
+## Basic usage
 
-For a full features image lib, check [`image`](https://pub.dartlang.org/packages/image).
+## Applying transformations
 
+## Performance improvements
 
+## The FFI
+
+## App using it
 
 ## Supported operations
 
 - flip vertical
 - flip horizontal
 - resize (nearest interpolation)
-
-### Also We,ve added some filters based on the `image` package.
-- Contraste
+- Contrast
 - Brightness
 - Saturation
 - Exposure
+
+## Todo
+
+- [ ] White balance
+- [ ] Color correction
+- [ ] Vingette
+- [ ] ??? The sky is the limit

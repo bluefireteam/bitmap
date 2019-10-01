@@ -17,7 +17,7 @@ Bitmap adjustColor(
   double saturation,
   double exposure,
 }) {
-  final Bitmap copy = bitmap.copyHeadless();
+  final Bitmap copy = bitmap.cloneHeadless();
   adjustColorCore(
     copy.content,
     blacks: blacks,

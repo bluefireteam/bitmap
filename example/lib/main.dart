@@ -136,15 +136,15 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: flipHImage,
-                  child: const Text("Flip horizontal"),
+                  child: const Text("Flip horizontal", style: TextStyle(fontSize: 10),),
                 ),
                 FlatButton(
                   onPressed: flipVImage,
-                  child: const Text("Flip vertical"),
+                  child: const Text("Flip vertical", style: TextStyle(fontSize: 10),),
                 ),
                 FlatButton(
                   onPressed: contrastImage,
-                  child: const Text("Contrast +"),
+                  child: const Text("Contrast +", style: TextStyle(fontSize: 10),),
                 ),
               ],
             ),
@@ -152,11 +152,11 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: brightnessImage,
-                  child: const Text("Brightness +"),
+                  child: const Text("Brightness +", style: TextStyle(fontSize: 10),),
                 ),
                 FlatButton(
                   onPressed: adjustColorImage,
-                  child: const Text("AdjustColor +"),
+                  child: const Text("AdjustColor +", style: TextStyle(fontSize: 10),),
                 ),
               ],
             ),

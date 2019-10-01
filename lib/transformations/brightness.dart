@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ffi' as ffi;
 
 import 'package:bitmap/ffi.dart';
 
@@ -7,7 +8,7 @@ import 'utils/color.dart';
 
 Bitmap brightness(Bitmap bitmap, double brightnessRate) {
   final Bitmap copy = bitmap.cloneHeadless();
-  brightnessCore(copy.content, brightnessRate);
+  brightnessCoreFFI(copy.content, brightnessRate);
   return copy;
 }
 
@@ -30,4 +31,25 @@ void brightnessCore(Uint8List sourceBmp, double brightnessRate) {
     sourceBmp[i + 1] = clamp255Int(nativeSum(sourceBmp[i + 1], brightness));
     sourceBmp[i + 2] = clamp255Int(nativeSum(sourceBmp[i + 2], brightness));
   }
+}
+
+
+
+void brightnessCoreFFI(Uint8List sourceBmp, double brightnessRate) {
+  assert(brightnessRate >= -1.0 && brightnessRate <= 1.0);
+  assert(sourceBmp != null);
+
+  if (brightnessRate == 0.0) {
+    return;
+  }
+
+  final brightnessAmount = brightnessRate * 255;
+  print("shit $brightnessAmount");
+  final ffi.Pointer<ffi.Uint8> startingPointer = prepareFFI(sourceBmp);
+  print("fuck $brightnessAmount");
+  brightnessFFIImpl(startingPointer, sourceBmp.length, brightnessAmount);
+  for (int i = 0; i < sourceBmp.length; i++) {
+    startingPointer.elementAt(i).load();
+  }
+
 }

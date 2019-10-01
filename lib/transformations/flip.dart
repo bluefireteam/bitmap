@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import '../bitmap.dart';
 
 Bitmap flipVertical(Bitmap bitmap) {
-  final Bitmap copy = bitmap.copyHeadless();
+  final Bitmap copy = bitmap.cloneHeadless();
   final width = bitmap.width;
   final height = bitmap.height;
-  final Uint8List copyContent = copy.contentByteData;
+  final Uint8List copyContent = copy.content;
 
   verticalFlipCore(copyContent, width, height);
 
@@ -39,10 +39,10 @@ void verticalFlipCore(Uint8List bmp, int width, int height) {
 }
 
 Bitmap flipHorizontal(Bitmap bitmap) {
-  final Bitmap copy = bitmap.copyHeadless();
+  final Bitmap copy = bitmap.cloneHeadless();
   final width = bitmap.width;
   final height = bitmap.height;
-  final Uint8List copyContent = copy.contentByteData;
+  final Uint8List copyContent = copy.content;
 
   horizontalFlipCore(copyContent, width, height);
 

@@ -4,8 +4,8 @@ import '../bitmap.dart';
 import 'utils/color.dart';
 
 Bitmap brightness(Bitmap bitmap, double brightnessRate) {
-  final Bitmap copy = bitmap.copyHeadless();
-  brightnessCore(copy.contentByteData, brightnessRate);
+  final Bitmap copy = bitmap.cloneHeadless();
+  brightnessCore(copy.content, brightnessRate);
   return copy;
 }
 
@@ -16,7 +16,9 @@ void brightnessCore(Uint8List sourceBmp, double brightnessRate) {
   assert(brightnessRate >= -1.0 && brightnessRate <= 1.0);
   assert(sourceBmp != null);
 
-  if (brightnessRate == 0.0) return;
+  if (brightnessRate == 0.0) {
+    return;
+  }
 
   final brightness = brightnessRate * 255;
 

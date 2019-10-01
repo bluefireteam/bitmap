@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bitmap/bitmap.dart';
+import 'package:bitmap/transformations.dart';
 
 void main() => runApp(MyApp());
 

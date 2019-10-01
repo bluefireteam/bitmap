@@ -6,18 +6,13 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 
-export 'transformations/adjust_color.dart';
-export 'transformations/brightness.dart';
-export 'transformations/contrast.dart';
-export 'transformations/flip.dart';
-
 const int bitmapPixelLength = 4;
 const int RGBA32HeaderSize = 122;
 
 class Bitmap {
   Bitmap.fromHeadless(this.width, this.height, this.content);
 
-  Bitmap.fromHeaded(this.width, this.height, Uint8List headedIntList)
+  Bitmap.fromHeadful(this.width, this.height, Uint8List headedIntList)
       : content = headedIntList.sublist(
           RGBA32HeaderSize,
           headedIntList.length,

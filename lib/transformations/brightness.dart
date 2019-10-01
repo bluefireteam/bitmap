@@ -24,8 +24,6 @@ void brightnessCore(Uint8List sourceBmp, double brightnessRate) {
 
   final brightness = (brightnessRate * 255).toInt();
 
-
-
   final size = sourceBmp.length;
   for (int i = 0; i < size; i += 4) {
     sourceBmp[i] = clamp255Int(nativeSum(sourceBmp[i], brightness));

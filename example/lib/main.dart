@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:bitmap/bitmap.dart';
 import 'package:bitmap/transformations.dart';
 
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -186,7 +187,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final Uint8List converted = await compute(
-        flipHImageIsolate, [temp.content, temp.width, temp.height]);
+      flipHImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -196,7 +199,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final converted = await compute(
-        flipVImageIsolate, [temp.content, temp.width, temp.height]);
+      flipVImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -206,7 +211,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final Uint8List converted = await compute(
-        contrastImageIsolate, [temp.content, temp.width, temp.height]);
+      contrastImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -232,7 +239,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final Uint8List converted = await compute(
-        adjustColorsImageIsolate, [temp.content, temp.width, temp.height]);
+      adjustColorsImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }

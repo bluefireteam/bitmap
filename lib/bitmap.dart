@@ -14,22 +14,16 @@ class Bitmap {
 
   Bitmap.fromHeadful(this.width, this.height, Uint8List headedIntList)
       : content = headedIntList.sublist(
-<<<<<<< HEAD
           RGBA32HeaderSize,
           headedIntList.length,
         );
-=======
-    ARGB32HeaderSize,
-    headedIntList.length,
-  );
->>>>>>> transform into plugin
 
   Bitmap.blank(
-      this.width,
-      this.height,
-      ) : content = Uint8List.fromList(
-    List.filled(width * height * bitmapPixelLength, 0),
-  );
+    this.width,
+    this.height,
+  ) : content = Uint8List.fromList(
+          List.filled(width * height * bitmapPixelLength, 0),
+        );
 
   final int width;
   final int height;
@@ -49,7 +43,7 @@ class Bitmap {
     final Completer completer = Completer<ImageInfo>();
     final ImageStream stream = provider.resolve(const ImageConfiguration());
     final listener =
-    ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        ImageStreamListener((ImageInfo info, bool synchronousCall) {
       if (!completer.isCompleted) {
         completer.complete(info);
       }

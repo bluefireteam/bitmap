@@ -44,9 +44,7 @@ void brightnessCoreFFI(Uint8List sourceBmp, double brightnessRate) {
   }
 
   final brightnessAmount = brightnessRate * 255;
-  print("shit $brightnessAmount");
   final ffi.Pointer<ffi.Uint8> startingPointer = prepareFFI(sourceBmp);
-  print("fuck $brightnessAmount");
   brightnessFFIImpl(startingPointer, sourceBmp.length, brightnessAmount);
   for (int i = 0; i < sourceBmp.length; i++) {
     startingPointer.elementAt(i).load();

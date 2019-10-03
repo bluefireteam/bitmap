@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:bitmap/bitmap.dart';
 import 'package:bitmap/transformations.dart';
 
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -91,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   Image.memory(
                     bitmap.buildHeaded(),
                   ),
-                  Text("ImageSize ${bitmap.width}")
+                  const Text("Tap image to reset"),
+                  Text("ImageSize ${bitmap.width}"),
                 ],
               );
             },
@@ -136,15 +136,24 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: flipHImage,
-                  child: const Text("Flip horizontal", style: TextStyle(fontSize: 10),),
+                  child: const Text(
+                    "Flip horizontal",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
                 FlatButton(
                   onPressed: flipVImage,
-                  child: const Text("Flip vertical", style: TextStyle(fontSize: 10),),
+                  child: const Text(
+                    "Flip vertical",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
                 FlatButton(
                   onPressed: contrastImage,
-                  child: const Text("Contrast +", style: TextStyle(fontSize: 10),),
+                  child: const Text(
+                    "Contrast +",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
               ],
             ),
@@ -152,11 +161,17 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: brightnessImage,
-                  child: const Text("Brightness +", style: TextStyle(fontSize: 10),),
+                  child: const Text(
+                    "Brightness +",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
                 FlatButton(
                   onPressed: adjustColorImage,
-                  child: const Text("AdjustColor +", style: TextStyle(fontSize: 10),),
+                  child: const Text(
+                    "AdjustColor +",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
               ],
             ),

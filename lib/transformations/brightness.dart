@@ -22,7 +22,7 @@ void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
     return;
   }
 
-  final brightnessAmount =(brightnessRate * 255).floor();
+  final brightnessAmount = (brightnessRate * 255).floor();
   final size = sourceBmp.length;
 
   print("---------------");
@@ -30,9 +30,10 @@ void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
   print(sourceBmp.elementAt(2));
 
   // start C execution
-  FFIImpl((startingPointer, pointerList){
+  FFIImpl((startingPointer, pointerList) {
     _brightnessFFIImpl(startingPointer, size, brightnessAmount);
-  })..execute(sourceBmp);
+  })
+    ..execute(sourceBmp);
 
   print("---------------");
   print(brightnessAmount);
@@ -43,11 +44,17 @@ void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
 const _nativeFunctionName = "brightness";
 
 typedef _BrightnessFunction = ffi.Pointer<ffi.Uint8> Function(
-    ffi.Pointer<ffi.Uint8> startingPointer,
-    int bitmapLength,
-    int brightnessAmount,
+  ffi.Pointer<ffi.Uint8> startingPointer,
+  int bitmapLength,
+  int brightnessAmount,
 );
 
-typedef _BrightnessNative = ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, ffi.Int32, ffi.Int32,);
+typedef _BrightnessNative = ffi.Pointer<ffi.Uint8> Function(
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Int32,
+  ffi.Int32,
+);
 
-_BrightnessFunction _brightnessFFIImpl = bitmapFFILib.lookup<ffi.NativeFunction<_BrightnessNative>>(_nativeFunctionName).asFunction();
+_BrightnessFunction _brightnessFFIImpl = bitmapFFILib
+    .lookup<ffi.NativeFunction<_BrightnessNative>>(_nativeFunctionName)
+    .asFunction();

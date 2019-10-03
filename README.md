@@ -16,7 +16,8 @@ I started to use [dart image](https://pub.dartlang.org/packages/image) to create
 So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BMP_file_format) (duh) and we focus only on Flutter use cases.
 
 `bitmap` takes some advantages from Flutter:
-- Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener;
+- Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener, so we can rely on Flutter to do the decode job;
+- Dart FFI: we are porting some of our functions to C (or C++) making it blazing fast.
 - With this package you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want in order to free the ui thread of heavy computation.
 - [Niks](https://github.com/renancaraujo/niks) Want to create your own image editor? Niks and bitmap are awesome for the job.
 
@@ -77,10 +78,15 @@ Bitmap nowThisBitmapLooksWeird = bmp.contrast(brightBitmap, 1.5);
 Bitmap finalBitmap = bmp.adjustColor(nowThisBitmapLooksWeird, saturation: 1.0);
 ```
 
-<<<<<<< HEAD
 ### 3. Displaying/saving/painting the output
 
 ## Performance improvements and Dart FFI
+
+### Dart FFI
+
+The capability of calling a `c` (or `c++`) function from dart can help us a lot in getter better performance times.
+
+**Status**: [The FFI is still in development](https://dart.dev/guides/libraries/c-interop), but some of our functions are being ported to `C++`, making it blazing fast.
 
 ### Isolates
 
@@ -92,15 +98,6 @@ Check the [example app](https://github.com/renancaraujo/bitmap), where the trans
 
 **Important: it is noticed that the performance increases a lot when using release mode on your Flutter App**
 
-### Dart FFI
-
-The capability of calling a `c` (or `c++`) function from dart can help us a lot in getter better performance times.
-
-**Status**: [The FFI is still in development](https://dart.dev/guides/libraries/c-interop), and there is no optimal way to pass a list to a `c` function.
-So the time we gain in teh pixel computation we lose when putting every pixel on a pointer.
-
-All Bitmap FFI experiments are being tested in [this branch](https://github.com/renancaraujo/bitmap/pull/4).
-
 ## Apps using it (only one for now)
 
 - [Lets Picture](https://github.com/renancaraujo/letspicture) - [Play store](https://play.google.com/store/apps/details?id=app.letspicture.letspicture) and the [source code](https://github.com/renancaraujo/letspicture).
@@ -110,9 +107,6 @@ All Bitmap FFI experiments are being tested in [this branch](https://github.com/
 - Flip vertical
 - Flip horizontal
 - Resize (nearest interpolation)
-=======
-### Also We,ve added some filters based on the `image` package.
->>>>>>> transform into plugin
 - Contrast
 - Brightness
 - Saturation
@@ -122,6 +116,7 @@ All Bitmap FFI experiments are being tested in [this branch](https://github.com/
 
 There is a lot of work to be done:
 
+- [ ] Resize with other interpolations
 - [ ] Set channel
 - [ ] White balance
 - [ ] Color blend

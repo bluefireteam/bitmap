@@ -14,13 +14,8 @@ int clamp255_n255(int before) {
     return before;
 }
 
-
-extern "C" __attribute__((visibility("default"))) __attribute__((used))
-int32_t sum(int32_t x, int32_t y) {
-    return x + y;
-}
 /**
- * Receives a bitmap, its length and a brightness amount variating between 0 and 255
+ * Receives a bitmap, its length and a brightness amount valuating between -255 and 255
  */
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 uint8_t *brightness(uint8_t *starting_pointer, int bitmap_length, int brightness_amount) {

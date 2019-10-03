@@ -3,6 +3,8 @@
 A minimalist [Flutter](https://flutter.dev/) package to help bitmaps operations.
 The focus here is to provide a cool bitmap manipulation interface.
 
+![transform image dog](transform.jpg)
+
 The package standard format is [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space).
 
 For now, things like format encoding, exif and multi-frame images are not the concern of this package. If that is your need, check [`image`](https://pub.dartlang.org/packages/image).
@@ -16,7 +18,8 @@ I started to use [dart image](https://pub.dartlang.org/packages/image) to create
 So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BMP_file_format) (duh) and we focus only on Flutter use cases.
 
 `bitmap` takes some advantages from Flutter:
-- Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener;
+- Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener, so we can rely on Flutter to do the decode job;
+- Dart FFI: we are porting some of our functions to C (or C++) making it blazing fast.
 - With this package you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want in order to free the ui thread of heavy computation.
 - [Niks](https://github.com/renancaraujo/niks) Want to create your own image editor? Niks and bitmap are awesome for the job.
 
@@ -81,6 +84,12 @@ Bitmap finalBitmap = bmp.adjustColor(nowThisBitmapLooksWeird, saturation: 1.0);
 
 ## Performance improvements and Dart FFI
 
+### Dart FFI
+
+The capability of calling a `c` (or `c++`) function from dart can help us a lot in getter better performance times.
+
+**Status**: [The FFI is still in development](https://dart.dev/guides/libraries/c-interop), but some of our functions are being ported to `C++`, making it blazing fast.
+
 ### Isolates
 
 Most of the manipulations on the bitmap takes a really long time to be completed. That's is because they have to iterate on every item of the bitmap.
@@ -90,15 +99,6 @@ Those can be expensive. Sou you may use [Isolates](https://www.didierboelens.com
 Check the [example app](https://github.com/renancaraujo/bitmap), where the transformations are applied through the compute function. 
 
 **Important: it is noticed that the performance increases a lot when using release mode on your Flutter App**
-
-### Dart FFI
-
-The capability of calling a `c` (or `c++`) function from dart can help us a lot in getter better performance times.
-
-**Status**: [The FFI is still in development](https://dart.dev/guides/libraries/c-interop), and there is no optimal way to pass a list to a `c` function.
-So the time we gain in teh pixel computation we lose when putting every pixel on a pointer.
-
-All Bitmap FFI experiments are being tested in [this branch](https://github.com/renancaraujo/bitmap/pull/4).
 
 ## Apps using it (only one for now)
 
@@ -118,6 +118,7 @@ All Bitmap FFI experiments are being tested in [this branch](https://github.com/
 
 There is a lot of work to be done:
 
+- [ ] Resize with other interpolations
 - [ ] Set channel
 - [ ] White balance
 - [ ] Color blend

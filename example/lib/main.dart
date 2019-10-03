@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -87,10 +86,14 @@ class _MyHomePageState extends State<MyHomePage> {
               }
               return Column(
                 children: <Widget>[
-                  Image.memory(
-                    bitmap.buildHeaded(),
+                  SafeArea(
+                    top: true,
+                    child: Image.memory(
+                      bitmap.buildHeaded(),
+                    ),
                   ),
-                  Text("ImageSize ${bitmap.width}")
+                  const Text("Tap image to reset"),
+                  Text("ImageSize ${bitmap.width}"),
                 ],
               );
             },
@@ -135,15 +138,24 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: flipHImage,
-                  child: const Text("Flip horizontal"),
+                  child: const Text(
+                    "Flip horizontal",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
                 FlatButton(
                   onPressed: flipVImage,
-                  child: const Text("Flip vertical"),
+                  child: const Text(
+                    "Flip vertical",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
                 FlatButton(
                   onPressed: contrastImage,
-                  child: const Text("Contrast +"),
+                  child: const Text(
+                    "Contrast +",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
               ],
             ),
@@ -151,11 +163,17 @@ class Buttons extends StatelessWidget {
               children: <Widget>[
                 FlatButton(
                   onPressed: brightnessImage,
-                  child: const Text("Brightness +"),
+                  child: const Text(
+                    "Brightness +",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
                 FlatButton(
                   onPressed: adjustColorImage,
-                  child: const Text("AdjustColor +"),
+                  child: const Text(
+                    "AdjustColor +",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ),
               ],
             ),
@@ -175,7 +193,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
   }
 
   void loadImage() async {
-    const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
+    const ImageProvider imageProvider = const AssetImage("assets/doggo.jpeg");
 
     value = await Bitmap.fromProvider(imageProvider);
     initial = value;
@@ -186,7 +204,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final Uint8List converted = await compute(
-        flipHImageIsolate, [temp.content, temp.width, temp.height]);
+      flipHImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -196,7 +216,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final converted = await compute(
-        flipVImageIsolate, [temp.content, temp.width, temp.height]);
+      flipVImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -206,7 +228,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final Uint8List converted = await compute(
-        contrastImageIsolate, [temp.content, temp.width, temp.height]);
+      contrastImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -215,14 +239,10 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     final temp = value;
     value = null;
 
-    final start = DateTime.now();
     final Uint8List converted = await compute(
       brightnessImageIsolate,
       [temp.content, temp.width, temp.height],
     );
-    final end = DateTime.now();
-
-    print(end.difference(start));
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -232,7 +252,9 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     value = null;
 
     final Uint8List converted = await compute(
-        adjustColorsImageIsolate, [temp.content, temp.width, temp.height]);
+      adjustColorsImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
@@ -280,7 +302,7 @@ Future<Uint8List> brightnessImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = brightness(bigBitmap, 0.2);
+  final Bitmap returnBitmap = brightness(bigBitmap, 0.1);
 
   return returnBitmap.content;
 }
@@ -296,8 +318,8 @@ Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
     bigBitmap,
     blacks: 0x00000000,
     whites: 0x00FFFFFF,
-    saturation: 5.0, // 0 and 5 mid 1.0
-    exposure: 0.0, // 0 and 0.5 no mid
+    saturation: 1.002, // 0 and 5 mid 1.0
+    exposure: 0.0002, // 0 and 0.5 no mid
   );
 
   return returnBitmap.content;

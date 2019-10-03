@@ -82,7 +82,6 @@ class RGBA32BitmapHeader {
     bd.setUint8(0x1, 0x4d);
     bd.setInt32(0x2, fileLength, Endian.little);
     bd.setInt32(0xa, RGBA32HeaderSize, Endian.little);
-
     bd.setUint32(0xe, 108, Endian.little);
     bd.setUint32(0x12, width, Endian.little);
     bd.setUint32(0x16, -height, Endian.little);

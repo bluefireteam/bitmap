@@ -1,6 +1,6 @@
-# example
+# bitmap_example
 
-A new Flutter project.
+Demonstrates how to use the bitmap plugin.
 
 ## Getting Started
 

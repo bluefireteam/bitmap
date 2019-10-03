@@ -5,7 +5,7 @@ author: Renan C. Araújo <renan@caraujo.me>
 homepage: https://github.com/renancaraujo/bitmap
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -16,3 +16,6 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
+  plugin:
+    androidPackage: com.example.bitmap
+    pluginClass: BitmapPlugin

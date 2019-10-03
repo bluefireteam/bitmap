@@ -3,6 +3,8 @@
 A minimalist [Flutter](https://flutter.dev/) package to help bitmaps operations.
 The focus here is to provide a cool bitmap manipulation interface.
 
+![transform image dog](transform.jpg)
+
 The package standard format is [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space).
 
 For now, things like format encoding, exif and multi-frame images are not the concern of this package. If that is your need, check [`image`](https://pub.dartlang.org/packages/image).

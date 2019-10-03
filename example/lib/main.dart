@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -87,8 +86,11 @@ class _MyHomePageState extends State<MyHomePage> {
               }
               return Column(
                 children: <Widget>[
-                  Image.memory(
-                    bitmap.buildHeaded(),
+                  SafeArea(
+                    top: true,
+                    child: Image.memory(
+                      bitmap.buildHeaded(),
+                    ),
                   ),
                   const Text("Tap image to reset"),
                   Text("ImageSize ${bitmap.width}"),
@@ -191,7 +193,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
   }
 
   void loadImage() async {
-    const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
+    const ImageProvider imageProvider = const AssetImage("assets/doggo.jpeg");
 
     value = await Bitmap.fromProvider(imageProvider);
     initial = value;
@@ -316,8 +318,8 @@ Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
     bigBitmap,
     blacks: 0x00000000,
     whites: 0x00FFFFFF,
-    saturation: 1.0, // 0 and 5 mid 1.0
-    exposure: -1.0, // 0 and 0.5 no mid
+    saturation: 1.002, // 0 and 5 mid 1.0
+    exposure: 0.0002, // 0 and 0.5 no mid
   );
 
   return returnBitmap.content;

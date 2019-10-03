@@ -9,11 +9,11 @@ import '../ffi.dart';
 /// [brightnessRate] Can be between -1.0 and 1.0. 0.0 does nothing;
 Bitmap brightness(Bitmap bitmap, double brightnessRate) {
   final Bitmap copy = bitmap.cloneHeadless();
-  _brightnessCore(copy.content, brightnessRate);
+  brightnessCore(copy.content, brightnessRate);
   return copy;
 }
 
-void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
+void brightnessCore(Uint8List sourceBmp, double brightnessRate) {
   assert(brightnessRate >= -1.0 && brightnessRate <= 1.0);
   assert(sourceBmp != null);
 
@@ -34,13 +34,13 @@ void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
 // *** FFi C++ bindings ***
 const _nativeFunctionName = "brightness";
 
-typedef _NativeSideFunction = ffi.Pointer<ffi.Uint8> Function(
+typedef _NativeSideFunction = ffi.Void Function(
     ffi.Pointer<ffi.Uint8>,
     ffi.Int32,
     ffi.Int32,
 );
 
-typedef _DartSideFunction = ffi.Pointer<ffi.Uint8> Function(
+typedef _DartSideFunction = void Function(
   ffi.Pointer<ffi.Uint8> startingPointer,
   int bitmapLength,
   int brightnessAmount,

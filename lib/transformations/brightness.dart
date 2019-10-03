@@ -25,10 +25,18 @@ void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
   final brightnessAmount =(brightnessRate * 255).floor();
   final size = sourceBmp.length;
 
+  print("---------------");
+  print(brightnessAmount);
+  print(sourceBmp.elementAt(2));
+
   // start C execution
   FFIImpl((startingPointer, pointerList){
     _brightnessFFIImpl(startingPointer, size, brightnessAmount);
   })..execute(sourceBmp);
+
+  print("---------------");
+  print(brightnessAmount);
+  print(sourceBmp.elementAt(2));
 }
 
 // *** FFi C++ bindings ***

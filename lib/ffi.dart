@@ -21,6 +21,7 @@ class FFIImpl {
     final ffi.Pointer<ffi.Uint8> startingPointer = ffi.Pointer<ffi.Uint8>.allocate(count: sourceBmp.length);
     // ignore: avoid_as
     final pointerList = startingPointer.asExternalTypedData(count: sourceBmp.length) as typed.Uint8List;
+    pointerList.setAll(0, sourceBmp);
     ffiExecution(startingPointer, pointerList);
     sourceBmp.setAll(0, pointerList);
   }

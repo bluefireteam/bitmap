@@ -237,14 +237,10 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
     final temp = value;
     value = null;
 
-    final start = DateTime.now();
     final Uint8List converted = await compute(
       brightnessImageIsolate,
       [temp.content, temp.width, temp.height],
     );
-    final end = DateTime.now();
-
-    print(end.difference(start));
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }

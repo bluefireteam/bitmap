@@ -1,9 +1,8 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import 'package:bitmap/ffi.dart';
-
 import '../bitmap.dart';
+import '../ffi.dart';
 
 /// Changes brightness of [sourceBmp] accordingly to [brightnessRate] .
 ///
@@ -35,18 +34,18 @@ void _brightnessCore(Uint8List sourceBmp, double brightnessRate) {
 // *** FFi C++ bindings ***
 const _nativeFunctionName = "brightness";
 
-typedef _BrightnessFunction = ffi.Pointer<ffi.Uint8> Function(
+typedef _NativeSideFunction = ffi.Pointer<ffi.Uint8> Function(
+    ffi.Pointer<ffi.Uint8>,
+    ffi.Int32,
+    ffi.Int32,
+);
+
+typedef _DartSideFunction = ffi.Pointer<ffi.Uint8> Function(
   ffi.Pointer<ffi.Uint8> startingPointer,
   int bitmapLength,
   int brightnessAmount,
 );
 
-typedef _BrightnessNative = ffi.Pointer<ffi.Uint8> Function(
-  ffi.Pointer<ffi.Uint8>,
-  ffi.Int32,
-  ffi.Int32,
-);
-
-_BrightnessFunction _brightnessFFIImpl = bitmapFFILib
-    .lookup<ffi.NativeFunction<_BrightnessNative>>(_nativeFunctionName)
+_DartSideFunction _brightnessFFIImpl = bitmapFFILib
+    .lookup<ffi.NativeFunction<_NativeSideFunction>>(_nativeFunctionName)
     .asFunction();

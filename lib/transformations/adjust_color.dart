@@ -1,8 +1,8 @@
-import 'dart:math';
+import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
 import '../bitmap.dart';
-import 'utils/color.dart';
+import '../ffi.dart';
 
 const DEG_TO_RAD = 0.0174532925;
 
@@ -43,59 +43,63 @@ void adjustColorCore(
     return;
   }
 
-  double br, bg, bb;
-  double wr, wg, wb;
-
-  /// prep exposure
-  if (exposure != null && exposure != 0.0) {
-    exposure = pow(2, exposure);
-  }
-
-  /// prep saturation
-  final invSaturation = saturation != null ? 1.0 - saturation : 0.0;
-
-  /// prep Blacks whits mids
-  if ((blacks != null && blacks != 0) || whites != null) {
-    br = blacks != null ? blacks / 255.0 : 0.0;
-    bg = blacks != null ? blacks / 255.0 : 0.0;
-    bb = blacks != null ? blacks / 255.0 : 0.0;
-
-    wr = whites != null ? whites / 255.0 : 1.0;
-    wg = whites != null ? whites / 255.0 : 1.0;
-    wb = whites != null ? whites / 255.0 : 1.0;
-  }
   final size = sourceBmp.length;
 
-  for (int i = 0; i < size; i += 4) {
-    double r = sourceBmp[i] / 255.0;
-    double g = sourceBmp[i + 1] / 255.0;
-    double b = sourceBmp[i + 2] / 255.0;
+  exposure = exposure ?? 0.0;
+  saturation = saturation ?? 1.0;
 
-    /// blacks
-    if (br != null) {
-      r = (r + br) * wr;
-      g = (g + bg) * wg;
-      b = (b + bb) * wb;
-    }
+  int computeBlacks = (blacks != null && blacks != 0) ? 1 : 0;
+  int computeWhites = (whites != null && whites != 0x00FFFFFF) ? 1 : 0;
+  print(exposure);
+  // start native execution
+  FFIImpl((startingPointer, pointerList) {
+    _adjustColorFFIImpl(
+        startingPointer,
+        size,
 
-    /// saturation
-    if (saturation != null) {
-      final lum = r * lumCoeffR + g * lumCoeffG + b * lumCoeffB;
+        blacks,
+        whites,
+        saturation,
+        exposure,
 
-      r = lum * invSaturation + r * saturation;
-      g = lum * invSaturation + g * saturation;
-      b = lum * invSaturation + b * saturation;
-    }
+        computeBlacks,
+        computeWhites,
+    );
+  })
+    ..execute(sourceBmp);
 
-    /// exposure
-    if (exposure != null && exposure != 0.0) {
-      r = r * exposure;
-      g = g * exposure;
-      b = b * exposure;
-    }
-
-    sourceBmp[i] = clamp255(r * 255.0);
-    sourceBmp[i + 1] = clamp255(g * 255.0);
-    sourceBmp[i + 2] = clamp255(b * 255.0);
-  }
 }
+
+// *** FFi C++ bindings ***
+const _nativeFunctionName = "adjust_color";
+
+typedef _NativeSideFunction = ffi.Void Function(
+    ffi.Pointer<ffi.Uint8>,
+    ffi.Int32,
+
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Double,
+    ffi.Double,
+
+    ffi.Int32,
+    ffi.Int32,
+);
+
+typedef _DartSideFunction = void Function(
+    ffi.Pointer<ffi.Uint8> startingPointer,
+    int bitmapLength,
+
+    int blacks,
+    int whites,
+    double saturation,
+    double exposure,
+
+    int computeBlacks,
+    int computeWhites,
+);
+
+
+_DartSideFunction _adjustColorFFIImpl = bitmapFFILib
+    .lookup<ffi.NativeFunction<_NativeSideFunction>>(_nativeFunctionName)
+    .asFunction();

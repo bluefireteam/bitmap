@@ -316,8 +316,8 @@ Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
     bigBitmap,
     blacks: 0x00000000,
     whites: 0x00FFFFFF,
-    saturation: 5.0, // 0 and 5 mid 1.0
-    exposure: 0.0, // 0 and 0.5 no mid
+    saturation: 1.0, // 0 and 5 mid 1.0
+    exposure: -1.0, // 0 and 0.5 no mid
   );
 
   return returnBitmap.content;

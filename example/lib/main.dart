@@ -289,7 +289,7 @@ Future<Uint8List> brightnessImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = brightness(bigBitmap, 0.2);
+  final Bitmap returnBitmap = brightness(bigBitmap, 0.1);
 
   return returnBitmap.content;
 }

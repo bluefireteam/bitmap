@@ -8,23 +8,20 @@ final ffi.DynamicLibrary bitmapFFILib = Platform.isAndroid
     ? ffi.DynamicLibrary.open("libbitmap.so")
     : ffi.DynamicLibrary.open("bitmap.framework/bitmap");
 
-final int Function(int x, int y) nativeSum = bitmapFFILib
-    .lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32, ffi.Int32)>>("sum")
-    .asFunction();
-
-
-ffi.Pointer<ffi.Uint8> prepareFFI(typed.Uint8List sourceBmp) {
-  ffi.Pointer<ffi.Uint8> startingPointer= ffi.Pointer<ffi.Uint8>
-      .allocate(count: sourceBmp.length);
-  for (int i = 0; i < sourceBmp.length; i++) {
-    startingPointer.elementAt(i).store(sourceBmp[i]);
-  }
-  return startingPointer;
-}
-
-final ffi.Pointer<ffi.Uint8> Function(
+typedef BitmapFFIExecution = void Function(
     ffi.Pointer<ffi.Uint8> startingPointer,
-    int bitmapLength,
-    double brightnessAmount,
-    ) brightnessFFIImpl = bitmapFFILib.lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, ffi.Int32, ffi.Double,)>>("brightness").asFunction();
+    typed.Uint8List pointerList,
+);
 
+class FFIImpl {
+  FFIImpl(this.ffiExecution);
+  final BitmapFFIExecution ffiExecution;
+
+  void execute(typed.Uint8List sourceBmp){
+    final ffi.Pointer<ffi.Uint8> startingPointer = ffi.Pointer<ffi.Uint8>.allocate(count: sourceBmp.length);
+    // ignore: avoid_as
+    final pointerList = startingPointer.asExternalTypedData(count: sourceBmp.length) as typed.Uint8List;
+    ffiExecution(startingPointer, pointerList);
+    sourceBmp.setAll(0, pointerList);
+  }
+}

@@ -54,51 +54,43 @@ void adjustColorCore(
   // start native execution
   FFIImpl((startingPointer, pointerList) {
     _adjustColorFFIImpl(
-        startingPointer,
-        size,
-
-        blacks,
-        whites,
-        saturation,
-        exposure,
-
-        computeBlacks,
-        computeWhites,
+      startingPointer,
+      size,
+      blacks,
+      whites,
+      saturation,
+      exposure,
+      computeBlacks,
+      computeWhites,
     );
   })
     ..execute(sourceBmp);
-
 }
 
 // *** FFi C++ bindings ***
 const _nativeFunctionName = "adjust_color";
 
 typedef _NativeSideFunction = ffi.Void Function(
-    ffi.Pointer<ffi.Uint8>,
-    ffi.Int32,
-
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Double,
-    ffi.Double,
-
-    ffi.Int32,
-    ffi.Int32,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Int32,
+  ffi.Uint64,
+  ffi.Uint64,
+  ffi.Double,
+  ffi.Double,
+  ffi.Int32,
+  ffi.Int32,
 );
 
 typedef _DartSideFunction = void Function(
-    ffi.Pointer<ffi.Uint8> startingPointer,
-    int bitmapLength,
-
-    int blacks,
-    int whites,
-    double saturation,
-    double exposure,
-
-    int computeBlacks,
-    int computeWhites,
+  ffi.Pointer<ffi.Uint8> startingPointer,
+  int bitmapLength,
+  int blacks,
+  int whites,
+  double saturation,
+  double exposure,
+  int computeBlacks,
+  int computeWhites,
 );
-
 
 _DartSideFunction _adjustColorFFIImpl = bitmapFFILib
     .lookup<ffi.NativeFunction<_NativeSideFunction>>(_nativeFunctionName)

@@ -35,9 +35,9 @@ void brightnessCore(Uint8List sourceBmp, double brightnessRate) {
 const _nativeFunctionName = "brightness";
 
 typedef _NativeSideFunction = ffi.Void Function(
-    ffi.Pointer<ffi.Uint8>,
-    ffi.Int32,
-    ffi.Int32,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Int32,
+  ffi.Int32,
 );
 
 typedef _DartSideFunction = void Function(

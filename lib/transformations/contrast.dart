@@ -15,26 +15,25 @@ void contrastCore(Uint8List sourceBmp, double contrastRate) {
   assert(contrastRate >= 0.0);
   assert(sourceBmp != null);
   final size = sourceBmp.length;
-  FFIImpl((startingPointer, pointerList){
+  FFIImpl((startingPointer, pointerList) {
     _contrastFFIImpl(startingPointer, size, contrastRate);
   })
     ..execute(sourceBmp);
 }
 
-
 // *** FFi C++ bindings ***
 const _nativeFunctionName = "contrast";
 
 typedef _NativeSideFunction = ffi.Void Function(
-    ffi.Pointer<ffi.Uint8>,
-    ffi.Int32,
-    ffi.Double,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Int32,
+  ffi.Double,
 );
 
 typedef _DartSideFunction = void Function(
-    ffi.Pointer<ffi.Uint8> startingPointer,
-    int bitmapLength,
-    double contrastRate,
+  ffi.Pointer<ffi.Uint8> startingPointer,
+  int bitmapLength,
+  double contrastRate,
 );
 
 _DartSideFunction _contrastFFIImpl = bitmapFFILib

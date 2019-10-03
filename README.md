@@ -12,15 +12,15 @@ Some of the algorithms here are heavily inspired by this awesome lib.
 
 ## Why this exists?
 
-I started to use [dart image](https://pub.dartlang.org/packages/image) to create [LetsPicture](https://github.com/renancaraujo/letspicture/) (cool app, check it out) but since the beginning I've noticed that the performance was really bad.
+I started to use [dart image](https://pub.dartlang.org/packages/image) to create [LetsPicture](https://github.com/renancaraujo/letspicture/) (cool app, check it out) but since the beginning, I've noticed that the performance was really bad.
 [Dart image](https://pub.dartlang.org/packages/image) has its own Image format, so between decoding, putting some transformations and then displaying the result on the app you had to convert the image two times (at least).
 
 So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BMP_file_format) (duh) and we focus only on Flutter use cases.
 
 `bitmap` takes some advantages from Flutter:
-- Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener, so we can rely on Flutter to do the decode job;
+- Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener, so we can rely on Flutter to do the decoding job;
 - Dart FFI: we are porting some of our functions to C (or C++) making it blazing fast.
-- With this package you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want in order to free the ui thread of heavy computation.
+- With this package you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want in order to free the UI thread of heavy computation.
 - [Niks](https://github.com/renancaraujo/niks) Want to create your own image editor? Niks and bitmap are awesome for the job.
 
 ## Alternatives
@@ -29,10 +29,10 @@ So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BM
 
 As mentioned previously, [`check on pub`](https://pub.dartlang.org/packages/image).
 
-#### Flutter Built in ColorFilter class
+#### Flutter Built-in ColorFilter class
 
 Flutter has a powerful [ColorFilter](https://api.flutter.dev/flutter/dart-ui/ColorFilter-class.html) class (that came from [skia](https://skia.org/user/api/skpaint_overview#SkColorFilter)) which can be used to put some color corrections when painting stuff on canvas. You can use a matrix to correct color (Some matrix examples [here](https://docs.rainmeter.net/tips/colormatrix-guide/)).
-Not every color transformation can be done though the matrix, though. 
+Not every color transformation can be done through the matrix, though. 
 
 ## Basic usage
 
@@ -92,9 +92,9 @@ The capability of calling a `c` (or `c++`) function from dart can help us a lot 
 
 ### Isolates
 
-Most of the manipulations on the bitmap takes a really long time to be completed. That's is because they have to iterate on every item of the bitmap.
+Most of the manipulations on the bitmap take a long time to be completed. That's is because they have to iterate on every item of the bitmap.
 A picture with 400px width and height will generate a list 640000 integers.  This is heavy computation.
-Those can be expensive. Sou you may use [Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/) there to free the ui thread from all of this work.
+Those can be expensive. Sou you may use [Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/) there to free the UI thread from all of this work.
 
 Check the [example app](https://github.com/renancaraujo/bitmap), where the transformations are applied through the compute function. 
 

@@ -1,13 +1,15 @@
 # Flutter Bitmap
 
-A minimalist [Flutter](https://flutter.dev/) package to help bitmaps operations.
+A minimalist [Flutter](https://flutter.dev/) package to perform fast bitmaps operations.
 The focus here is to provide a cool bitmap manipulation interface.
 
 ![transform image dog](transform.jpg)
 
 The package standard format is [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space).
 
-For now, things like format encoding, exif and multi-frame images are not the concern of this package. If that is your need, check [`image`](https://pub.dartlang.org/packages/image).
+Bitmap uses the Dart FFI to perform operations such as contrast, brightness, saturation, and exposure.
+
+For now, things like format encoding, EXIF and multi-frame images are not the concern of this package. If that is your need, check [`image`](https://pub.dartlang.org/packages/image).
 Some of the algorithms here are heavily inspired by this awesome lib.
 
 ## Why this exists?
@@ -20,7 +22,7 @@ So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BM
 `bitmap` takes some advantages from Flutter:
 - Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener, so we can rely on Flutter to do the decoding job;
 - Dart FFI: we are porting some of our functions to C (or C++) making it blazing fast.
-- With this package you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want in order to free the UI thread of heavy computation.
+- With this package, you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want to free the UI thread of heavy computation.
 - [Niks](https://github.com/renancaraujo/niks) Want to create your own image editor? Niks and bitmap are awesome for the job.
 
 ## Alternatives
@@ -80,7 +82,43 @@ Bitmap nowThisBitmapLooksWeird = bmp.contrast(brightBitmap, 1.5);
 Bitmap finalBitmap = bmp.adjustColor(nowThisBitmapLooksWeird, saturation: 1.0);
 ```
 
-### 3. Displaying/saving/painting the output
+### 3. Displaying/painting/saving the output
+
+You can create two outputs from a `Bitmap` instance:
+- A `Uint8List` with no header, only the content of the file (`.content` property).
+- A `Uint8List` with a bitmap header, which Flutter can parse (`.buildHeaded()` method).
+
+##### Displaying
+
+To easiest way to display an image is to getting the bitmap with header and then passing it to the widget `Image.memory`:
+```dart
+// ..
+
+Uint8List headedBitmap = bitmap.buildHeaded();
+
+// ..
+child: Image.memory(headedBitmap)
+// ..
+```
+
+##### Painting
+
+The `Bitmap` class has also a helper function `buildImage`  that uses Flutter's `decodeImageFromList` to build a [`dart:ui Image`](https://api.flutter.dev/flutter/dart-ui/Image-class.html).
+With an `Image`, you can [paint it in a canvas](https://api.flutter.dev/flutter/dart-ui/Canvas/drawImage.html) (in a [CustomPainter](https://api.flutter.dev/flutter/rendering/CustomPainter-class.html), for example).
+
+```dart
+import 'dart:ui' as ui;
+// ..
+ui.Image outputImage = await bitmap.buildImage();
+canvas.drawImage(outputImage, Offset.zero, ui.Paint());
+```
+
+##### Saving
+
+You can also save the image as a `.bmp` file (get the file content with the `.buildHeaded()` method).
+You can check also the [`image`](https://pub.dartlang.org/packages/image) lib where you can save the image in several formats.
+
+[How to save files with Flutter?](https://flutter.dev/docs/cookbook/persistence/reading-writing-files)
 
 ## Performance improvements and Dart FFI
 
@@ -93,7 +131,7 @@ The capability of calling a `c` (or `c++`) function from dart can help us a lot 
 ### Isolates
 
 Most of the manipulations on the bitmap take a long time to be completed. That's is because they have to iterate on every item of the bitmap.
-A picture with 400px width and height will generate a list 640000 integers.  This is heavy computation.
+A picture with a 400px width and height sizes will generate a list of 640000 integers.  This is a heavy computation.
 Those can be expensive. Sou you may use [Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/) there to free the UI thread from all of this work.
 
 Check the [example app](https://github.com/renancaraujo/bitmap), where the transformations are applied through the compute function. 

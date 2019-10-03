@@ -1,6 +1,6 @@
 name: bitmap
 description: A minimalist package to help you manipulate bitmaps. It is focused on bitmap transformations.
-version: 0.0.3
+version: 0.0.4-next
 author: Renan C. Araújo <renan@caraujo.me>
 homepage: https://github.com/renancaraujo/bitmap
 

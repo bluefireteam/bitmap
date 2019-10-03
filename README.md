@@ -1,9 +1,12 @@
+
+![transform image dog](transform.jpg)
+
 # Flutter Bitmap
+
+[![Pub](https://img.shields.io/pub/v/bitmap.svg?style=popout)](https://pub.dartlang.org/packages/bitmap)
 
 A minimalist [Flutter](https://flutter.dev/) package to perform fast bitmaps operations.
 The focus here is to provide a cool bitmap manipulation interface.
-
-![transform image dog](transform.jpg)
 
 The package standard format is [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space).
 

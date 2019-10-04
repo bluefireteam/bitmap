@@ -51,6 +51,9 @@ void adjustColorCore(
   final computeBlacks = (blacks != null && blacks != 0) ? 1 : 0;
   final computeWhites = (whites != null && whites != 0x00FFFFFF) ? 1 : 0;
 
+  blacks = blacks ?? 0;
+  whites = whites ?? 0;
+
   // start native execution
   FFIImpl((startingPointer, pointerList) {
     _adjustColorFFIImpl(

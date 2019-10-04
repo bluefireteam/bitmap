@@ -130,55 +130,56 @@ class Buttons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                FlatButton(
-                  onPressed: flipHImage,
-                  child: const Text(
-                    "Flip horizontal",
-                    style: TextStyle(fontSize: 10),
-                  ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              FlatButton(
+                onPressed: flipHImage,
+                child: const Text(
+                  "Flip horizontal",
+                  style: TextStyle(fontSize: 10),
                 ),
-                FlatButton(
-                  onPressed: flipVImage,
-                  child: const Text(
-                    "Flip vertical",
-                    style: TextStyle(fontSize: 10),
-                  ),
+              ),
+              FlatButton(
+                onPressed: flipVImage,
+                child: const Text(
+                  "Flip vertical",
+                  style: TextStyle(fontSize: 10),
                 ),
-                FlatButton(
-                  onPressed: contrastImage,
-                  child: const Text(
-                    "Contrast +",
-                    style: TextStyle(fontSize: 10),
-                  ),
+              ),
+              FlatButton(
+                onPressed: contrastImage,
+                child: const Text(
+                  "Contrast +",
+                  style: TextStyle(fontSize: 10),
                 ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                FlatButton(
-                  onPressed: brightnessImage,
-                  child: const Text(
-                    "Brightness +",
-                    style: TextStyle(fontSize: 10),
-                  ),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              FlatButton(
+                onPressed: brightnessImage,
+                child: const Text(
+                  "Brightness +",
+                  style: TextStyle(fontSize: 10),
                 ),
-                FlatButton(
-                  onPressed: adjustColorImage,
-                  child: const Text(
-                    "AdjustColor +",
-                    style: TextStyle(fontSize: 10),
-                  ),
+              ),
+              FlatButton(
+                onPressed: adjustColorImage,
+                child: const Text(
+                  "AdjustColor +",
+                  style: TextStyle(fontSize: 10),
                 ),
-              ],
-            ),
-          ],
-        ));
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -317,9 +318,9 @@ Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
   final Bitmap returnBitmap = adjustColor(
     bigBitmap,
     blacks: 0x00000000,
-    whites: 0x00FFFFFF,
-    saturation: 1.002, // 0 and 5 mid 1.0
-    exposure: 0.0002, // 0 and 0.5 no mid
+    whites: null,
+    saturation: 1.9, // 0 and 5 mid 1.0
+    exposure: null, // 0 and 0.5 no mid
   );
 
   return returnBitmap.content;

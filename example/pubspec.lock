@@ -28,7 +28,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.4-next2"
+    version: "0.0.4-next3"
   boolean_selector:
     dependency: transitive
     description:

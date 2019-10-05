@@ -26,5 +26,6 @@ class FFIImpl {
     pointerList.setAll(0, sourceBmp);
     ffiExecution(startingPointer, pointerList);
     sourceBmp.setAll(0, pointerList);
+    startingPointer.free();
   }
 }

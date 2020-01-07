@@ -3,6 +3,7 @@ import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'dart:typed_data' as typed; // For Platform.isX
+import 'package:ffi/ffi.dart' as ext_ffi;
 
 final ffi.DynamicLibrary bitmapFFILib = Platform.isAndroid
     ? ffi.DynamicLibrary.open("libbitmap.so")
@@ -19,13 +20,14 @@ class FFIImpl {
 
   void execute(typed.Uint8List sourceBmp) {
     final ffi.Pointer<ffi.Uint8> startingPointer =
-        ffi.Pointer<ffi.Uint8>.allocate(count: sourceBmp.length);
+        ext_ffi.allocate<ffi.Uint8>(count: sourceBmp.length);
     // ignore: avoid_as
-    final pointerList = startingPointer.asExternalTypedData(
-        count: sourceBmp.length) as typed.Uint8List;
+
+    final pointerList = startingPointer.asTypedList(sourceBmp.length);
     pointerList.setAll(0, sourceBmp);
     ffiExecution(startingPointer, pointerList);
     sourceBmp.setAll(0, pointerList);
-    startingPointer.free();
+
+    ext_ffi.free(startingPointer);
   }
 }

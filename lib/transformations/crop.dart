@@ -41,17 +41,17 @@ Bitmap cropLTWH(
 /// Crops the source bitmap to rectangle defined by top, left, right and bottom.
 Bitmap cropLTRB(
   Bitmap bitmap,
-  int cropLeft,
-  int cropTop,
-  int cropRight,
-  int cropBottom,
+  int left,
+  int top,
+  int right,
+  int bottom,
 ) =>
     cropLTWH(
       bitmap,
-      cropLeft,
-      cropTop,
-      cropRight - cropLeft,
-      cropBottom - cropTop,
+      left,
+      top,
+      right - left,
+      bottom - top,
     );
 
 void cropCore(

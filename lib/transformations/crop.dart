@@ -5,23 +5,23 @@ import '../bitmap.dart';
 /// Crops the source bitmap to rectangle defined by top, left, width and height.
 Bitmap cropLTWH(
   Bitmap bitmap,
-  int cropLeft,
-  int cropTop,
-  int cropWidth,
-  int cropHeight,
+  int left,
+  int top,
+  int width,
+  int height,
 ) {
-  assert(cropLeft >= 0);
-  assert(cropTop >= 0);
-  assert(cropWidth > 0);
-  assert(cropHeight > 0);
-  assert(cropLeft + cropWidth <= bitmap.width);
-  assert(cropTop + cropHeight <= bitmap.height);
+  assert(left >= 0);
+  assert(top >= 0);
+  assert(width > 0);
+  assert(height > 0);
+  assert(left + width <= bitmap.width);
+  assert(top + height <= bitmap.height);
 
-  final int newBitmapSize = cropWidth * cropHeight * bitmapPixelLength;
+  final int newBitmapSize = width * height * bitmapPixelLength;
 
   final Bitmap cropped = Bitmap.fromHeadless(
-    cropWidth,
-    cropHeight,
+    width,
+    height,
     Uint8List(newBitmapSize),
   );
 
@@ -29,10 +29,10 @@ Bitmap cropLTWH(
     bitmap.content,
     cropped.content,
     bitmap.width, // Height is not needed.
-    cropLeft,
-    cropTop,
-    cropWidth,
-    cropHeight,
+    left,
+    top,
+    width,
+    height,
   );
 
   return cropped;

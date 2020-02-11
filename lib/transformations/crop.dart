@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../bitmap.dart';
 
+/// Crops the source bitmap to rectangle defined by top, left, width and height.
 Bitmap cropLTWH(
   Bitmap bitmap,
   int cropLeft,
@@ -37,6 +38,7 @@ Bitmap cropLTWH(
   return cropped;
 }
 
+/// Crops the source bitmap to rectangle defined by top, left, right and bottom.
 Bitmap cropLTRB(
   Bitmap bitmap,
   int cropLeft,

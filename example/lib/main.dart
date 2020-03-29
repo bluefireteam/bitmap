@@ -52,6 +52,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void rotateClockwiseImage() {
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.rotateClockwiseImage();
+    }
+  }
+  
+  void rotateCounterClockwiseImage() {
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.rotateCounterClockwiseImage();
+    }
+  }
+
+  void rotate180Image() {
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.rotate180Image();
+    }
+  }
+
   void contrastImage() {
     if (imageValueNotifier.value != null) {
       imageValueNotifier.contrastImage();
@@ -103,6 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Buttons(
         flipHImage: flipHImage,
         flipVImage: flipVImage,
+        rotateClockwiseImage: rotateClockwiseImage,
+        rotateCounterClockwiseImage: rotateCounterClockwiseImage,
+        rotate180Image: rotate180Image,
         contrastImage: contrastImage,
         brightnessImage: brightnessImage,
         adjustColorImage: adjustColorImage,
@@ -116,6 +137,9 @@ class Buttons extends StatelessWidget {
     Key key,
     this.flipHImage,
     this.flipVImage,
+    this.rotateClockwiseImage,
+    this.rotateCounterClockwiseImage,
+    this.rotate180Image,
     this.contrastImage,
     this.brightnessImage,
     this.adjustColorImage,
@@ -123,6 +147,9 @@ class Buttons extends StatelessWidget {
 
   final VoidCallback flipHImage;
   final VoidCallback flipVImage;
+  final VoidCallback rotateClockwiseImage;
+  final VoidCallback rotateCounterClockwiseImage;
+  final VoidCallback rotate180Image;
   final VoidCallback contrastImage;
   final VoidCallback brightnessImage;
   final VoidCallback adjustColorImage;
@@ -177,6 +204,31 @@ class Buttons extends StatelessWidget {
               ),
             ],
           ),
+          Row(
+            children: <Widget>[
+              FlatButton(
+                onPressed: rotateClockwiseImage,
+                child: const Text(
+                  "Rotate Clock +",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+              FlatButton(
+                onPressed: rotateCounterClockwiseImage,
+                child: const Text(
+                  "Rotate Clock -",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+              FlatButton(
+                onPressed: rotate180Image,
+                child: const Text(
+                  "Rotate 180",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -194,7 +246,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
   }
 
   void loadImage() async {
-    const ImageProvider imageProvider = const AssetImage("assets/doggo.jpeg");
+    const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
 
     value = await Bitmap.fromProvider(imageProvider);
     initial = value;
@@ -218,6 +270,42 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
 
     final converted = await compute(
       flipVImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
+
+    value = Bitmap.fromHeadless(temp.width, temp.height, converted);
+  }
+
+  void rotateClockwiseImage() async {
+    final temp = value;
+    value = null;
+    
+    final converted = await compute(
+      rotateClockwiseImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
+
+    value = Bitmap.fromHeadless(temp.height, temp.width, converted);
+  }
+
+  void rotateCounterClockwiseImage() async {
+    final temp = value;
+    value = null;
+    
+    final converted = await compute(
+      rotateCounterClockwiseImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
+
+    value = Bitmap.fromHeadless(temp.height, temp.width, converted);
+  }
+
+  void rotate180Image() async {
+    final temp = value;
+    value = null;
+    
+    final converted = await compute(
+      rotate180ImageIsolate,
       [temp.content, temp.width, temp.height],
     );
 
@@ -280,6 +368,42 @@ Future<Uint8List> flipVImageIsolate(List imageData) async {
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
   final Bitmap returnBitmap = flipVertical(bigBitmap);
+
+  return returnBitmap.content;
+}
+
+Future<Uint8List> rotateClockwiseImageIsolate(List imageData) async {
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
+
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+
+  final Bitmap returnBitmap = rotateClockwise(bigBitmap);
+
+  return returnBitmap.content;
+}
+
+Future<Uint8List> rotateCounterClockwiseImageIsolate(List imageData) async {
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
+
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+
+  final Bitmap returnBitmap = rotateCounterClockwise(bigBitmap);
+
+  return returnBitmap.content;
+}
+
+Future<Uint8List> rotate180ImageIsolate(List imageData) async {
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
+
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+
+  final Bitmap returnBitmap = rotate180(bigBitmap);
 
   return returnBitmap.content;
 }

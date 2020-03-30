@@ -149,6 +149,7 @@ Check the [example app](https://github.com/renancaraujo/bitmap), where the trans
 
 - Flip vertical
 - Flip horizontal
+- Rotation
 - Resize (nearest interpolation)
 - Contrast
 - Brightness

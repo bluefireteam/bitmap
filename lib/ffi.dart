@@ -28,6 +28,6 @@ class FFIImpl {
     ffiExecution(startingPointer, pointerList);
     sourceBmp.setAll(0, pointerList);
 
-    ext_ffi.malloc.free(startingPointer);
+    ext_ffi.calloc.free(startingPointer);
   }
 }

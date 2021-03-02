@@ -20,7 +20,7 @@ class FFIImpl {
 
   void execute(typed.Uint8List sourceBmp) {
     final ffi.Pointer<ffi.Uint8> startingPointer =
-        ext_ffi.allocate<ffi.Uint8>(count: sourceBmp.length);
+        ext_ffi.calloc<ffi.Uint8>(sourceBmp.length);
     // ignore: avoid_as
 
     final pointerList = startingPointer.asTypedList(sourceBmp.length);
@@ -28,6 +28,6 @@ class FFIImpl {
     ffiExecution(startingPointer, pointerList);
     sourceBmp.setAll(0, pointerList);
 
-    ext_ffi.free(startingPointer);
+    ext_ffi.calloc.free(startingPointer);
   }
 }

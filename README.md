@@ -73,16 +73,24 @@ Bitmap bitmap = Bitmap.blank(imageWidth, imageHeight);
 ```
 This creates a black, full transparent bitmap.
 
-### 2. Applying some transformations
+### 2. Applying some operations
 
-Let's put some contrast, brightness and  increase saturation
+Let's put some contrast
 ```dart
 import 'package:bitmap/bitmap.dart';
-import 'package:bitmap/transformations.dart' as bmp;
 
-Bitmap brightBitmap = bmp.brightness(bitmap, 0.2);
-Bitmap nowThisBitmapLooksWeird = bmp.contrast(brightBitmap, 1.5);
-Bitmap finalBitmap = bmp.adjustColor(nowThisBitmapLooksWeird, saturation: 1.0);
+Bitmap contrastedBitmap = bitmap.apply(BitmapContrast(0.2));;
+```
+
+It is possible to add several operations at once
+```dart
+import 'package:bitmap/bitmap.dart';
+Bitmap brightBitmap = bitmap.applyBatch([
+  BitmapBrightness(0.2),
+  BitmapAdjustColor(
+    saturation: 1.0
+  ),
+]);
 ```
 
 ### 3. Displaying/painting/saving the output
@@ -129,8 +137,6 @@ You can check also the [`image`](https://pub.dartlang.org/packages/image) lib wh
 
 The capability of calling a `c` (or `c++`) function from dart can help us a lot in getter better performance times.
 
-**Status**: [The FFI is still in development](https://dart.dev/guides/libraries/c-interop), but some of our functions are being ported to `C++`, making it blazing fast.
-
 ### Isolates
 
 Most of the manipulations on the bitmap take a long time to be completed. That's is because they have to iterate on every item of the bitmap.
@@ -155,6 +161,7 @@ Check the [example app](https://github.com/renancaraujo/bitmap), where the trans
 - Brightness
 - Saturation
 - Exposure
+- Crop
 
 ## Todo
 

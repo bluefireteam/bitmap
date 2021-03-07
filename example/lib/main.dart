@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bitmap/bitmap.dart';
-import 'package:bitmap/transformations.dart';
 
 void main() => runApp(MyApp());
 
@@ -57,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       imageValueNotifier.rotateClockwiseImage();
     }
   }
-  
+
   void rotateCounterClockwiseImage() {
     if (imageValueNotifier.value != null) {
       imageValueNotifier.rotateCounterClockwiseImage();
@@ -85,6 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void adjustColorImage() {
     if (imageValueNotifier.value != null) {
       imageValueNotifier.adjustColorImage();
+    }
+  }
+
+  void batchOperations() {
+    if (imageValueNotifier.value != null) {
+      imageValueNotifier.batchOperations();
     }
   }
 
@@ -127,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
         contrastImage: contrastImage,
         brightnessImage: brightnessImage,
         adjustColorImage: adjustColorImage,
+        batchOperations: batchOperations,
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
@@ -143,6 +149,7 @@ class Buttons extends StatelessWidget {
     this.contrastImage,
     this.brightnessImage,
     this.adjustColorImage,
+    this.batchOperations,
   }) : super(key: key);
 
   final VoidCallback flipHImage;
@@ -153,6 +160,7 @@ class Buttons extends StatelessWidget {
   final VoidCallback contrastImage;
   final VoidCallback brightnessImage;
   final VoidCallback adjustColorImage;
+  final VoidCallback batchOperations;
 
   @override
   Widget build(BuildContext context) {
@@ -163,21 +171,21 @@ class Buttons extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: flipHImage,
                 child: const Text(
                   "Flip horizontal",
                   style: TextStyle(fontSize: 10),
                 ),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: flipVImage,
                 child: const Text(
                   "Flip vertical",
                   style: TextStyle(fontSize: 10),
                 ),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: contrastImage,
                 child: const Text(
                   "Contrast +",
@@ -188,14 +196,14 @@ class Buttons extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: brightnessImage,
                 child: const Text(
                   "Brightness +",
                   style: TextStyle(fontSize: 10),
                 ),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: adjustColorImage,
                 child: const Text(
                   "AdjustColor +",
@@ -206,21 +214,21 @@ class Buttons extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: rotateClockwiseImage,
                 child: const Text(
                   "Rotate Clock +",
                   style: TextStyle(fontSize: 10),
                 ),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: rotateCounterClockwiseImage,
                 child: const Text(
                   "Rotate Clock -",
                   style: TextStyle(fontSize: 10),
                 ),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: rotate180Image,
                 child: const Text(
                   "Rotate 180",
@@ -228,7 +236,18 @@ class Buttons extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
+          Row(
+            children: <Widget>[
+              TextButton(
+                onPressed: batchOperations,
+                child: const Text(
+                  "Batch operations (saturation + crop)",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -279,7 +298,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
   void rotateClockwiseImage() async {
     final temp = value;
     value = null;
-    
+
     final converted = await compute(
       rotateClockwiseImageIsolate,
       [temp.content, temp.width, temp.height],
@@ -291,7 +310,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
   void rotateCounterClockwiseImage() async {
     final temp = value;
     value = null;
-    
+
     final converted = await compute(
       rotateCounterClockwiseImageIsolate,
       [temp.content, temp.width, temp.height],
@@ -303,7 +322,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
   void rotate180Image() async {
     final temp = value;
     value = null;
-    
+
     final converted = await compute(
       rotate180ImageIsolate,
       [temp.content, temp.width, temp.height],
@@ -347,6 +366,18 @@ class ImageValueNotifier extends ValueNotifier<Bitmap> {
 
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
+
+  void batchOperations() async {
+    final temp = value;
+    value = null;
+
+    final Uint8List converted = await compute(
+      batchOperationsImageIsolate,
+      [temp.content, temp.width, temp.height],
+    );
+
+    value = Bitmap.fromHeadless(temp.width - 20, temp.height - 20, converted);
+  }
 }
 
 Future<Uint8List> flipHImageIsolate(List imageData) async {
@@ -355,7 +386,7 @@ Future<Uint8List> flipHImageIsolate(List imageData) async {
   final int height = imageData[2];
 
   final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
-  final returnBitmap = flipHorizontal(bigBitmap);
+  final returnBitmap = bigBitmap.apply(BitmapFlip.horizontal());
 
   return returnBitmap.content;
 }
@@ -367,7 +398,7 @@ Future<Uint8List> flipVImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = flipVertical(bigBitmap);
+  final Bitmap returnBitmap = bigBitmap.apply(BitmapFlip.vertical());
 
   return returnBitmap.content;
 }
@@ -379,7 +410,7 @@ Future<Uint8List> rotateClockwiseImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = rotateClockwise(bigBitmap);
+  final Bitmap returnBitmap = bigBitmap.apply(BitmapRotate.rotateClockwise());
 
   return returnBitmap.content;
 }
@@ -391,7 +422,8 @@ Future<Uint8List> rotateCounterClockwiseImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = rotateCounterClockwise(bigBitmap);
+  final Bitmap returnBitmap =
+      bigBitmap.apply(BitmapRotate.rotateCounterClockwise());
 
   return returnBitmap.content;
 }
@@ -403,7 +435,7 @@ Future<Uint8List> rotate180ImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = rotate180(bigBitmap);
+  final Bitmap returnBitmap = bigBitmap.apply(BitmapRotate.rotate180());
 
   return returnBitmap.content;
 }
@@ -415,7 +447,7 @@ Future<Uint8List> contrastImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final returnBitmap = contrast(bigBitmap, 1.2);
+  final returnBitmap = bigBitmap.apply(BitmapContrast(1.2));
 
   return returnBitmap.content;
 }
@@ -427,7 +459,7 @@ Future<Uint8List> brightnessImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = brightness(bigBitmap, 0.1);
+  final Bitmap returnBitmap = bigBitmap.apply(BitmapBrightness(0.1));
 
   return returnBitmap.content;
 }
@@ -439,13 +471,34 @@ Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
 
   final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = adjustColor(
-    bigBitmap,
-    blacks: 0x00000000,
-    whites: null,
-    saturation: 1.9, // 0 and 5 mid 1.0
-    exposure: null, // 0 and 0.5 no mid
+  final Bitmap returnBitmap = bigBitmap.apply(
+    BitmapAdjustColor(
+      blacks: 0x00000000,
+      saturation: 1.9, // 0 and 5 mid 1.0
+    ),
   );
+
+  return returnBitmap.content;
+}
+
+Future<Uint8List> batchOperationsImageIsolate(List imageData) async {
+  final Uint8List byteData = imageData[0];
+  final int width = imageData[1];
+  final int height = imageData[2];
+
+  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+
+  final Bitmap returnBitmap = bigBitmap.applyBatch([
+    BitmapAdjustColor(
+      saturation: 1.9,
+    ),
+    BitmapCrop.fromLTWH(
+      left: 10,
+      top: 10,
+      width: width - 20,
+      height: height - 20,
+    ),
+  ]);
 
   return returnBitmap.content;
 }

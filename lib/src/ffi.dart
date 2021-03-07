@@ -7,7 +7,7 @@ import 'package:ffi/ffi.dart' as ext_ffi;
 
 final ffi.DynamicLibrary bitmapFFILib = Platform.isAndroid
     ? ffi.DynamicLibrary.open("libbitmap.so")
-    : ffi.DynamicLibrary.open("bitmap.framework/bitmap");
+    : ffi.DynamicLibrary.process();
 
 typedef BitmapFFIExecution = void Function(
   ffi.Pointer<ffi.Uint8> startingPointer,
@@ -19,10 +19,7 @@ class FFIImpl {
   final BitmapFFIExecution ffiExecution;
 
   void execute(typed.Uint8List sourceBmp) {
-    final ffi.Pointer<ffi.Uint8> startingPointer =
-        ext_ffi.calloc<ffi.Uint8>(sourceBmp.length);
-    // ignore: avoid_as
-
+    final ffi.Pointer<ffi.Uint8> startingPointer =  ext_ffi.calloc<ffi.Uint8>(sourceBmp.length);
     final pointerList = startingPointer.asTypedList(sourceBmp.length);
     pointerList.setAll(0, sourceBmp);
     ffiExecution(startingPointer, pointerList);

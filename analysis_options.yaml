@@ -57,7 +57,6 @@ linter:
     - prefer_typing_uninitialized_variables
     - recursive_getters
     - slash_for_doc_comments
-    - sort_constructors_first
     - sort_unnamed_constructors_first
     - test_types_in_equals
     - throw_in_finally

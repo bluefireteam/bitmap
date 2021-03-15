@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Fix wrong assertion on resize image
+
 ## 0.1.0
 
 * Support FFI 1.0.0

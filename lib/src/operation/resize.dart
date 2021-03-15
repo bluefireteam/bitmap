@@ -7,7 +7,7 @@ class BitmapResize implements BitmapOperation {
       : resizeWidth = width,
         resizeHeight = height,
         assert(
-          width == null && height == null,
+          width != null || height != null,
           "You have to provide either width or height to resize an image",
         );
 
@@ -19,9 +19,10 @@ class BitmapResize implements BitmapOperation {
     final width = bitmap.width;
     final height = bitmap.height;
 
-    if (resizeWidth == null && resizeHeight == null) {
+    if (resizeWidth != null || resizeHeight != null) {
       throw UnsupportedError(
-          "You have to provide either width or height to resize an image");
+        "You have to provide either width or height to resize an image",
+      );
     }
 
     // keep aspect ratio

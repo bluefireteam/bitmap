@@ -19,7 +19,7 @@ class BitmapResize implements BitmapOperation {
     final width = bitmap.width;
     final height = bitmap.height;
 
-    if (resizeWidth != null || resizeHeight != null) {
+    if (resizeWidth == null && resizeHeight == null) {
       throw UnsupportedError(
         "You have to provide either width or height to resize an image",
       );

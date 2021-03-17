@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Fix wrong throw on resize image
+
 ## 0.1.1
 
 * Fix wrong assertion on resize image

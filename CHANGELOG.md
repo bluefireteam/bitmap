@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Bump ffi to 2.0.1
+
 ## 0.1.2
 
 * Fix wrong throw on resize image

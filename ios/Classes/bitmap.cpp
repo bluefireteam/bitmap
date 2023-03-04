@@ -145,3 +145,29 @@ void adjust_color(
    }
    return;
 }
+
+/**
+ * RGB overlay
+ * Receives a RGB color and an overlay intensity (scale parameter)
+*/
+extern "C" __attribute__((visibility("default"))) __attribute__((used))
+void rgb_overlay(
+        uint8_t *starting_pointer,
+        int bitmap_length,
+        double red,
+        double green,
+        double blue,
+        double scale
+) {
+    for(int i = 0; i < bitmap_length; i += 4) {
+        uint8_t *r = starting_pointer + i;
+        uint8_t *g = starting_pointer + i + 1;
+        uint8_t *b = starting_pointer + i + 2;
+
+        *r = clamp255_0(round((*r - (*r - red) * scale)));
+        *g = clamp255_0(round((*g - (*g - green) * scale)));
+        *b = clamp255_0(round((*b - (*b - blue) * scale)));
+    }
+
+    return;
+}

@@ -11,7 +11,7 @@ class BitmapCrop extends BitmapOperation {
     required this.top,
     required this.width,
     required this.height,
-  })   : assert(left >= 0),
+  })  : assert(left >= 0),
         assert(top >= 0),
         assert(width > 0),
         assert(height > 0);
@@ -21,7 +21,7 @@ class BitmapCrop extends BitmapOperation {
     required this.top,
     required int right,
     required int bottom,
-  })   : width = right - left,
+  })  : width = right - left,
         height = bottom - top;
 
   int left;

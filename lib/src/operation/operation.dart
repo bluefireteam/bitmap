@@ -6,6 +6,7 @@ export 'contrast.dart';
 export 'crop.dart';
 export 'flip.dart';
 export 'resize.dart';
+export 'rgb_overlay.dart';
 export 'rotation.dart';
 
 abstract class BitmapOperation {

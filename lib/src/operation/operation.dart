@@ -1,4 +1,4 @@
-import '../bitmap.dart';
+import 'package:bitmap/src/bitmap.dart';
 
 export 'adjust_color.dart';
 export 'brightness.dart';
@@ -9,6 +9,6 @@ export 'resize.dart';
 export 'rgb_overlay.dart';
 export 'rotation.dart';
 
-abstract class BitmapOperation {
+abstract interface class BitmapOperation {
   Bitmap applyTo(Bitmap bitmap);
 }

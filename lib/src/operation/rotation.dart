@@ -4,31 +4,21 @@ import 'package:bitmap/src/bitmap.dart';
 import 'package:bitmap/src/operation/operation.dart';
 
 /// A [BitmapOperation] which rotates a [Bitmap].
-class BitmapRotate implements BitmapOperation {
+abstract interface class BitmapRotate implements BitmapOperation {
   /// Creates a [BitmapRotate] which rotates a [Bitmap] clockwise.
-  BitmapRotate.rotateClockwise() : _rotate = _RotateClockwise();
+  factory BitmapRotate.rotateClockwise() = _BitmapRotateClockwise;
 
   /// Creates a [BitmapRotate] which rotates a [Bitmap] 180 degrees.
-  BitmapRotate.rotate180() : _rotate = _Rotate180();
+  factory BitmapRotate.rotate180() = _BitmapRotate180;
 
   /// Creates a [BitmapRotate] which rotates a [Bitmap] counter-clockwise.
-  BitmapRotate.rotateCounterClockwise() : _rotate = _RotateCounterClockwise();
+  factory BitmapRotate.rotateCounterClockwise() = _BitmapRotateCounterClockwise;
+}
 
-  final _Rotate _rotate;
 
+class _BitmapRotateClockwise implements BitmapRotate {
   @override
   Bitmap applyTo(Bitmap bitmap) {
-    return _rotate.doRotate(bitmap);
-  }
-}
-
-abstract class _Rotate {
-  Bitmap doRotate(Bitmap bitmap);
-}
-
-class _RotateClockwise implements _Rotate {
-  @override
-  Bitmap doRotate(Bitmap bitmap) {
     final rotated = Bitmap.fromHeadless(
       bitmap.height,
       bitmap.width,
@@ -51,7 +41,7 @@ class _RotateClockwise implements _Rotate {
     int width,
     int height,
   ) {
-    assert(width > 0 && height > 0);
+    assert(width > 0 && height > 0, 'width and height must be positive');
 
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
@@ -75,9 +65,9 @@ class _RotateClockwise implements _Rotate {
   }
 }
 
-class _RotateCounterClockwise implements _Rotate {
+class _BitmapRotateCounterClockwise implements BitmapRotate {
   @override
-  Bitmap doRotate(Bitmap bitmap) {
+  Bitmap applyTo(Bitmap bitmap) {
     final rotated = Bitmap.fromHeadless(
       bitmap.height,
       bitmap.width,
@@ -100,7 +90,7 @@ class _RotateCounterClockwise implements _Rotate {
     int width,
     int height,
   ) {
-    assert(width > 0 && height > 0);
+    assert(width > 0 && height > 0, 'width and height must be positive');
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
     final lineLength = width * pixelLength;
@@ -123,9 +113,9 @@ class _RotateCounterClockwise implements _Rotate {
   }
 }
 
-class _Rotate180 implements _Rotate {
+class _BitmapRotate180 implements BitmapRotate {
   @override
-  Bitmap doRotate(Bitmap bitmap) {
+  Bitmap applyTo(Bitmap bitmap) {
     final rotated = Bitmap.fromHeadless(
       bitmap.height,
       bitmap.width,
@@ -148,7 +138,7 @@ class _Rotate180 implements _Rotate {
     int width,
     int height,
   ) {
-    assert(width > 0 && height > 0);
+    assert(width > 0 && height > 0, 'Width and height must be positive.');
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
     final lineLength = width * pixelLength;

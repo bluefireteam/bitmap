@@ -1,12 +1,12 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import '../bitmap.dart';
-import '../ffi.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/ffi.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
 // *** FFi C++ bindings ***
-const _nativeFunctionName = "adjust_color";
+const _nativeFunctionName = 'adjust_color';
 
 typedef _NativeSideFunction = ffi.Void Function(
   ffi.Pointer<ffi.Uint8>,
@@ -62,7 +62,7 @@ class BitmapAdjustColor implements BitmapOperation {
 
   @override
   Bitmap applyTo(Bitmap bitmap) {
-    final Bitmap copy = bitmap.cloneHeadless();
+    final copy = bitmap.cloneHeadless();
     _adjustColorCore(
       copy.content,
     );

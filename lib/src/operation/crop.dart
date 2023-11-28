@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
-import '../bitmap.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
-/// Crops the source bitmap to rectangle defined by [top], [left], [width] and [height].
+/// Crops the source bitmap to rectangle defined by [top], [left], [width]
+/// and [height].
 class BitmapCrop extends BitmapOperation {
-  /// Crops the source bitmap to rectangle defined by top, left, width and height.
+
   BitmapCrop.fromLTWH({
     required this.left,
     required this.top,
@@ -34,9 +35,9 @@ class BitmapCrop extends BitmapOperation {
     assert(left + width <= bitmap.width);
     assert(top + height <= bitmap.height);
 
-    final int newBitmapSize = width * height * RGBA32BitmapHeader.pixelLength;
+    final newBitmapSize = width * height * RGBA32BitmapHeader.pixelLength;
 
-    final Bitmap cropped = Bitmap.fromHeadless(
+    final cropped = Bitmap.fromHeadless(
       width,
       height,
       Uint8List(newBitmapSize),
@@ -67,8 +68,8 @@ class BitmapCrop extends BitmapOperation {
   ) {
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
-    for (int x = left * pixelLength; x < (left + width) * pixelLength; x++) {
-      for (int y = top; y < (top + height); y++) {
+    for (var x = left * pixelLength; x < (left + width) * pixelLength; x++) {
+      for (var y = top; y < (top + height); y++) {
         destBmp[x - left * pixelLength + (y - top) * width * pixelLength] =
             sourceBmp[x + y * sourceWidth * pixelLength];
       }

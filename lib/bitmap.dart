@@ -1,3 +1,4 @@
+/// Bitmap library for Dart.
 library bitmap;
 
 export 'src/bitmap.dart';

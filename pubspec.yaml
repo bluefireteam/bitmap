@@ -4,7 +4,7 @@ version: 0.1.4
 homepage: https://github.com/renancaraujo/bitmap
 
 environment:
-  sdk: ">=3.0.3 <4.0.0"
+  sdk: ">=3.1.0 <4.0.0"
   flutter: ">=3.13.9 <4.0.0"
 
 dependencies:

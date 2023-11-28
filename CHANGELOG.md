@@ -1,3 +1,8 @@
+## 0.2.0
+
+* fix: Add support for android gradle version 8.1.3
+* feat: Implement RGB overlay operation
+
 ## 0.1.3
 
 * Bump ffi to 2.0.1

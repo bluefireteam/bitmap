@@ -1,16 +1,20 @@
 import 'dart:typed_data';
 
-import '../bitmap.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
+/// A [BitmapOperation] which rotates a [Bitmap].
 class BitmapRotate implements BitmapOperation {
-  final _Rotate _rotate;
-
+  /// Creates a [BitmapRotate] which rotates a [Bitmap] clockwise.
   BitmapRotate.rotateClockwise() : _rotate = _RotateClockwise();
 
+  /// Creates a [BitmapRotate] which rotates a [Bitmap] 180 degrees.
   BitmapRotate.rotate180() : _rotate = _Rotate180();
 
+  /// Creates a [BitmapRotate] which rotates a [Bitmap] counter-clockwise.
   BitmapRotate.rotateCounterClockwise() : _rotate = _RotateCounterClockwise();
+
+  final _Rotate _rotate;
 
   @override
   Bitmap applyTo(Bitmap bitmap) {
@@ -25,7 +29,7 @@ abstract class _Rotate {
 class _RotateClockwise implements _Rotate {
   @override
   Bitmap doRotate(Bitmap bitmap) {
-    final Bitmap rotated = Bitmap.fromHeadless(
+    final rotated = Bitmap.fromHeadless(
       bitmap.height,
       bitmap.width,
       Uint8List(bitmap.width * bitmap.height * RGBA32BitmapHeader.pixelLength),
@@ -51,19 +55,19 @@ class _RotateClockwise implements _Rotate {
 
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
-    final int lineLength = width * pixelLength;
-    for (int line = 0; line < height; line++) {
+    final lineLength = width * pixelLength;
+    for (var line = 0; line < height; line++) {
       final startOfLine = line * lineLength;
-      for (int column = 0; column < width; column++) {
-        final int columnStart = column * pixelLength;
-        final int pixelStart = startOfLine + columnStart;
-        final int pixelEnd = pixelStart + pixelLength;
+      for (var column = 0; column < width; column++) {
+        final columnStart = column * pixelLength;
+        final pixelStart = startOfLine + columnStart;
+        final pixelEnd = pixelStart + pixelLength;
 
-        final int rotatedStart =
+        final rotatedStart =
             (height * column) * pixelLength + (height - line - 1) * pixelLength;
-        final int rotatedEnd = rotatedStart + pixelLength;
+        final rotatedEnd = rotatedStart + pixelLength;
 
-        final Uint8List sourcePixel = sourceBmp.sublist(pixelStart, pixelEnd);
+        final sourcePixel = sourceBmp.sublist(pixelStart, pixelEnd);
 
         destBmp.setRange(rotatedStart, rotatedEnd, sourcePixel);
       }
@@ -74,7 +78,7 @@ class _RotateClockwise implements _Rotate {
 class _RotateCounterClockwise implements _Rotate {
   @override
   Bitmap doRotate(Bitmap bitmap) {
-    final Bitmap rotated = Bitmap.fromHeadless(
+    final rotated = Bitmap.fromHeadless(
       bitmap.height,
       bitmap.width,
       Uint8List(bitmap.width * bitmap.height * RGBA32BitmapHeader.pixelLength),
@@ -99,19 +103,19 @@ class _RotateCounterClockwise implements _Rotate {
     assert(width > 0 && height > 0);
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
-    final int lineLength = width * pixelLength;
-    for (int line = 0; line < height; line++) {
+    final lineLength = width * pixelLength;
+    for (var line = 0; line < height; line++) {
       final startOfLine = line * lineLength;
-      for (int column = 0; column < width; column++) {
-        final int columnStart = column * pixelLength;
-        final int pixelStart = startOfLine + columnStart;
-        final int pixelEnd = pixelStart + pixelLength;
+      for (var column = 0; column < width; column++) {
+        final columnStart = column * pixelLength;
+        final pixelStart = startOfLine + columnStart;
+        final pixelEnd = pixelStart + pixelLength;
 
-        final int rotatedStart =
+        final rotatedStart =
             (height * (width - column - 1)) * pixelLength + line * pixelLength;
-        final int rotatedEnd = rotatedStart + pixelLength;
+        final rotatedEnd = rotatedStart + pixelLength;
 
-        final Uint8List sourcePixel = sourceBmp.sublist(pixelStart, pixelEnd);
+        final sourcePixel = sourceBmp.sublist(pixelStart, pixelEnd);
 
         destBmp.setRange(rotatedStart, rotatedEnd, sourcePixel);
       }
@@ -122,7 +126,7 @@ class _RotateCounterClockwise implements _Rotate {
 class _Rotate180 implements _Rotate {
   @override
   Bitmap doRotate(Bitmap bitmap) {
-    final Bitmap rotated = Bitmap.fromHeadless(
+    final rotated = Bitmap.fromHeadless(
       bitmap.height,
       bitmap.width,
       Uint8List(bitmap.width * bitmap.height * RGBA32BitmapHeader.pixelLength),
@@ -147,19 +151,19 @@ class _Rotate180 implements _Rotate {
     assert(width > 0 && height > 0);
     const pixelLength = RGBA32BitmapHeader.pixelLength;
 
-    final int lineLength = width * pixelLength;
-    for (int line = 0; line < height; line++) {
+    final lineLength = width * pixelLength;
+    for (var line = 0; line < height; line++) {
       final startOfLine = line * lineLength;
-      for (int column = 0; column < width; column++) {
-        final int columnStart = column * pixelLength;
-        final int pixelStart = startOfLine + columnStart;
-        final int pixelEnd = pixelStart + pixelLength;
+      for (var column = 0; column < width; column++) {
+        final columnStart = column * pixelLength;
+        final pixelStart = startOfLine + columnStart;
+        final pixelEnd = pixelStart + pixelLength;
 
-        final int rotatedStart = width * (height - line - 1) * pixelLength +
+        final rotatedStart = width * (height - line - 1) * pixelLength +
             (width - column - 1) * pixelLength;
-        final int rotatedEnd = rotatedStart + pixelLength;
+        final rotatedEnd = rotatedStart + pixelLength;
 
-        final Uint8List sourcePixel = sourceBmp.sublist(pixelStart, pixelEnd);
+        final sourcePixel = sourceBmp.sublist(pixelStart, pixelEnd);
 
         destBmp.setRange(rotatedStart, rotatedEnd, sourcePixel);
       }

@@ -43,8 +43,8 @@ class Bitmap {
   }
 
   static Future<Bitmap> fromProvider(ImageProvider provider) async {
-    final Completer completer = Completer<ImageInfo>();
-    final ImageStream stream = provider.resolve(const ImageConfiguration());
+    final completer = Completer<ImageInfo>();
+    final  stream = provider.resolve(const ImageConfiguration());
     final listener = ImageStreamListener(
       (ImageInfo info, bool synchronousCall) {
         if (!completer.isCompleted) {

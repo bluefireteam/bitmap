@@ -384,10 +384,10 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
   }
 }
 
-Future<Uint8List> flipHImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> flipHImageIsolate(List<dynamic> imageData) async {
+  final Uint8List byteData = imageData[0] as Uint8List;
+  final int width = imageData[1] as int;
+  final int height = imageData[2] as int;
 
   final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
   final returnBitmap = bigBitmap.apply(BitmapFlip.horizontal());

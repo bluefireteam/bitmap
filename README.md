@@ -1,5 +1,5 @@
 
-![transform image dog](transform.jpg)
+![transform image dog](https://raw.githubusercontent.com/bluefireteam/bitmap/9cd10ebf04/transform.jpg)
 
 # Flutter Bitmap
 
@@ -17,7 +17,7 @@ Some of the algorithms here are heavily inspired by this awesome lib.
 
 ## Why this exists?
 
-I started to use [dart image](https://pub.dartlang.org/packages/image) to create [LetsPicture](https://github.com/renancaraujo/letspicture/) (cool app, check it out) but since the beginning, I've noticed that the performance was really bad.
+I started to use [dart image](https://pub.dartlang.org/packages/image) to create [LetsPicture](https://play.google.com/store/apps/details?id=app.letspicture.letspicture) (cool app, check it out) but since the beginning, I've noticed that the performance was really bad.
 [Dart image](https://pub.dartlang.org/packages/image) has its own Image format, so between decoding, putting some transformations and then displaying the result on the app you had to convert the image two times (at least).
 
 So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BMP_file_format) (duh) and we focus only on Flutter use cases.
@@ -26,7 +26,6 @@ So this package is just this: We deal [bitmaps](https://en.wikipedia.org/wiki/BM
 - Every image is decoded to [RGBA32](https://en.wikipedia.org/wiki/RGBA_color_space) by the framework trough ImageStreamListener, so we can rely on Flutter to do the decoding job;
 - Dart FFI: we are porting some of our functions to C (or C++) making it blazing fast.
 - With this package, you can easily take advantage of stuff like [compute](https://api.flutter.dev/flutter/foundation/compute.html) ([Isolates](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/)) on only the manipulations you want to free the UI thread of heavy computation.
-- [Niks](https://github.com/renancaraujo/niks) Want to create your own image editor? Niks and bitmap are awesome for the job.
 
 ## Alternatives
 

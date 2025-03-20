@@ -1,7 +1,7 @@
-name: bitmap
+name: bitmap_flutter
 description: Bitmap is a fast and minimalistic lib that heelps you to manipulate image on Flutter apps.
-version: 0.2.0
-homepage: https://github.com/bluefireteam/bitmap
+version: 1.0.0
+homepage: https://github.com/guptan404/bitmap
 topics: [image, image-processing, ffi]
 
 environment:

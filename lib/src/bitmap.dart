@@ -44,7 +44,7 @@ class Bitmap {
 
   static Future<Bitmap> fromProvider(ImageProvider provider) async {
     final Completer completer = Completer<ImageInfo>();
-    final ImageStream stream = provider.resolve(const ImageConfiguration());
+    final stream = provider.resolve(const ImageConfiguration());
     final listener = ImageStreamListener(
       (ImageInfo info, bool synchronousCall) {
         if (!completer.isCompleted) {
@@ -55,18 +55,18 @@ class Bitmap {
     stream.addListener(listener);
     final imageInfo = await completer.future;
     final ui.Image image = imageInfo.image;
-    final ByteData? byteData = await image.toByteData();
+    final byteData = await image.toByteData();
     if (byteData == null) {
       throw StateError("Couldn't serialize image into bytes");
     }
 
-    final Uint8List listInt = byteData.buffer.asUint8List();
+    final listInt = byteData.buffer.asUint8List();
 
     return Bitmap.fromHeadless(image.width, image.height, listInt);
   }
 
   Future<ui.Image> buildImage() async {
-    final Completer<ui.Image> imageCompleter = Completer();
+    final imageCompleter = Completer<ui.Image>();
     final headedContent = buildHeaded();
     ui.decodeImageFromList(headedContent, (ui.Image img) {
       imageCompleter.complete(img);
@@ -85,7 +85,7 @@ class Bitmap {
   }
 
   Bitmap applyBatch(List<BitmapOperation> operations) {
-    Bitmap result = this;
+    var result = this;
     for (final operation in operations) {
       result = operation.applyTo(result);
     }
@@ -112,7 +112,7 @@ class RGBA32BitmapHeader {
   RGBA32BitmapHeader(this.contentSize, int width, int height) {
     headerIntList = Uint8List(fileLength);
 
-    final ByteData bd = headerIntList.buffer.asByteData();
+    final bd = headerIntList.buffer.asByteData();
     bd.setUint8(0x0, 0x42);
     bd.setUint8(0x1, 0x4d);
     bd.setInt32(0x2, fileLength, Endian.little);

@@ -7,16 +7,15 @@ environment:
   flutter: ">=3.13.9 <4.0.0"
 
 dependencies:
+  bitmap:
+    path: ../
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  bitmap:
-    path: ../
+  
 
 flutter:
   uses-material-design: true

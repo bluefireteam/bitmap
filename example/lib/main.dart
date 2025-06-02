@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class Buttons extends StatelessWidget {
   const Buttons({
-    Key? key,
+    super.key,
     required this.flipHImage,
     required this.flipVImage,
     required this.rotateClockwiseImage,
@@ -154,7 +154,7 @@ class Buttons extends StatelessWidget {
     required this.brightnessImage,
     required this.adjustColorImage,
     required this.batchOperations,
-  }) : super(key: key);
+  });
 
   final VoidCallback flipHImage;
   final VoidCallback flipVImage;
@@ -268,18 +268,18 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = initial;
   }
 
-  void loadImage() async {
+  Future<void> loadImage() async {
     const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
 
     value = await Bitmap.fromProvider(imageProvider);
     initial = value!;
   }
 
-  void flipHImage() async {
+  Future<void> flipHImage() async {
     final temp = value!;
     value = null;
 
-    final Uint8List converted = await compute(
+    final converted = await compute(
       flipHImageIsolate,
       [temp.content, temp.width, temp.height],
     );
@@ -287,7 +287,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
-  void flipVImage() async {
+  Future<void> flipVImage() async {
     final temp = value!;
     value = null;
 
@@ -299,7 +299,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
-  void rotateClockwiseImage() async {
+  Future<void> rotateClockwiseImage() async {
     final temp = value!;
     value = null;
 
@@ -311,7 +311,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.height, temp.width, converted);
   }
 
-  void rotateCounterClockwiseImage() async {
+  Future<void> rotateCounterClockwiseImage() async {
     final temp = value!;
     value = null;
 
@@ -323,7 +323,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.height, temp.width, converted);
   }
 
-  void rotate180Image() async {
+  Future<void> rotate180Image() async {
     final temp = value!;
     value = null;
 
@@ -335,11 +335,11 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
-  void contrastImage() async {
+  Future<void> contrastImage() async {
     final temp = value!;
     value = null;
 
-    final Uint8List converted = await compute(
+    final converted = await compute(
       contrastImageIsolate,
       [temp.content, temp.width, temp.height],
     );
@@ -347,11 +347,11 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
-  void brightnessImage() async {
+  Future<void> brightnessImage() async {
     final temp = value!;
     value = null;
 
-    final Uint8List converted = await compute(
+    final converted = await compute(
       brightnessImageIsolate,
       [temp.content, temp.width, temp.height],
     );
@@ -359,11 +359,11 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
-  void adjustColorImage() async {
+  Future<void> adjustColorImage() async {
     final temp = value!;
     value = null;
 
-    final Uint8List converted = await compute(
+    final converted = await compute(
       adjustColorsImageIsolate,
       [temp.content, temp.width, temp.height],
     );
@@ -371,11 +371,11 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
     value = Bitmap.fromHeadless(temp.width, temp.height, converted);
   }
 
-  void batchOperations() async {
+  Future<void> batchOperations() async {
     final temp = value!;
     value = null;
 
-    final Uint8List converted = await compute(
+    final converted = await compute(
       batchOperationsImageIsolate,
       [temp.content, temp.width, temp.height],
     );
@@ -384,10 +384,10 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
   }
 }
 
-Future<Uint8List> flipHImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> flipHImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
   final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
   final returnBitmap = bigBitmap.apply(BitmapFlip.horizontal());
@@ -395,87 +395,87 @@ Future<Uint8List> flipHImageIsolate(List imageData) async {
   return returnBitmap.content;
 }
 
-Future<Uint8List> flipVImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> flipVImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = bigBitmap.apply(BitmapFlip.vertical());
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  return returnBitmap.content;
-}
-
-Future<Uint8List> rotateClockwiseImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
-
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
-
-  final Bitmap returnBitmap = bigBitmap.apply(BitmapRotate.rotateClockwise());
+  final returnBitmap = bigBitmap.apply(BitmapFlip.vertical());
 
   return returnBitmap.content;
 }
 
-Future<Uint8List> rotateCounterClockwiseImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> rotateClockwiseImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap =
-      bigBitmap.apply(BitmapRotate.rotateCounterClockwise());
-
-  return returnBitmap.content;
-}
-
-Future<Uint8List> rotate180ImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
-
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
-
-  final Bitmap returnBitmap = bigBitmap.apply(BitmapRotate.rotate180());
+  final returnBitmap = bigBitmap.apply(BitmapRotate.rotateClockwise());
 
   return returnBitmap.content;
 }
 
-Future<Uint8List> contrastImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> rotateCounterClockwiseImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+
+  final returnBitmap = bigBitmap.apply(BitmapRotate.rotateCounterClockwise());
+
+  return returnBitmap.content;
+}
+
+Future<Uint8List> rotate180ImageIsolate(List<dynamic> imageData) async {
+    final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
+
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+
+  final returnBitmap = bigBitmap.apply(BitmapRotate.rotate180());
+
+  return returnBitmap.content;
+}
+
+Future<Uint8List> contrastImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
+
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
   final returnBitmap = bigBitmap.apply(BitmapContrast(1.2));
 
   return returnBitmap.content;
 }
 
-Future<Uint8List> brightnessImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> brightnessImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = bigBitmap.apply(BitmapBrightness(0.1));
+  final returnBitmap = bigBitmap.apply(BitmapBrightness(0.1));
 
   return returnBitmap.content;
 }
 
-Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> adjustColorsImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = bigBitmap.apply(
+  final returnBitmap = bigBitmap.apply(
     BitmapAdjustColor(
       blacks: 0x00000000,
       saturation: 1.9, // 0 and 5 mid 1.0
@@ -485,14 +485,14 @@ Future<Uint8List> adjustColorsImageIsolate(List imageData) async {
   return returnBitmap.content;
 }
 
-Future<Uint8List> batchOperationsImageIsolate(List imageData) async {
-  final Uint8List byteData = imageData[0];
-  final int width = imageData[1];
-  final int height = imageData[2];
+Future<Uint8List> batchOperationsImageIsolate(List<dynamic> imageData) async {
+  final byteData = imageData[0] as Uint8List;
+  final width = imageData[1] as int;
+  final height = imageData[2] as int;
 
-  final Bitmap bigBitmap = Bitmap.fromHeadless(width, height, byteData);
+  final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
-  final Bitmap returnBitmap = bigBitmap.applyBatch([
+  final returnBitmap = bigBitmap.applyBatch([
     BitmapAdjustColor(
       saturation: 1.9,
     ),

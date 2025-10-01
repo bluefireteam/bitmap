@@ -25,6 +25,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    ndkVersion "29.0.14033849"
+
     if (project.android.hasProperty("namespace")) {
         namespace "com.example.bitmap"
     }

@@ -1,4 +1,3 @@
-library bitmap;
 
 export 'src/bitmap.dart';
 export 'src/ffi.dart';

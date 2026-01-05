@@ -1,13 +1,12 @@
 import 'dart:typed_data';
-import '../bitmap.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
 class BitmapFlip implements BitmapOperation {
-  final _Flip _flip;
-
   BitmapFlip.vertical() : _flip = _VerticalFlip();
 
   BitmapFlip.horizontal() : _flip = _HorizontalFlip();
+  final _Flip _flip;
 
   @override
   Bitmap applyTo(Bitmap bitmap) {
@@ -22,10 +21,10 @@ abstract class _Flip {
 class _VerticalFlip implements _Flip {
   @override
   Bitmap flip(Bitmap bitmap) {
-    final Bitmap copy = bitmap.cloneHeadless();
+    final copy = bitmap.cloneHeadless();
     final width = bitmap.width;
     final height = bitmap.height;
-    final Uint8List copyContent = copy.content;
+    final copyContent = copy.content;
 
     _verticalFlipCore(copyContent, width, height);
 
@@ -33,30 +32,30 @@ class _VerticalFlip implements _Flip {
   }
 
   void _verticalFlipCore(Uint8List bmp, int width, int height) {
-    const pixelLength = RGBA32BitmapHeader.pixelLength;
+    const pixelLength = RGBA32BitmapHeader.kPixelLength;
 
-    final int lineLength = width * pixelLength;
-    final int halfHeight = height ~/ 2;
+    final lineLength = width * pixelLength;
+    final halfHeight = height ~/ 2;
 
-    for (int line = 0; line < halfHeight; line++) {
-      final int startOfLine = line * lineLength;
-      final int startOfOppositeLine = (height - 1 - line) * lineLength;
-      for (int column = 0; column < width; column++) {
-        final int pixelStart = startOfLine + column * pixelLength;
-        final int pixelEnd = pixelStart + pixelLength;
+    for (var line = 0; line < halfHeight; line++) {
+      final startOfLine = line * lineLength;
+      final startOfOppositeLine = (height - 1 - line) * lineLength;
+      for (var column = 0; column < width; column++) {
+        final pixelStart = startOfLine + column * pixelLength;
+        final pixelEnd = pixelStart + pixelLength;
 
-        final int oppositePixelStart =
-            startOfOppositeLine + column * pixelLength;
-        final int oppositePixelEnd = oppositePixelStart + pixelLength;
+        final oppositePixelStart = startOfOppositeLine + column * pixelLength;
+        final oppositePixelEnd = oppositePixelStart + pixelLength;
 
-        final Uint8List oppositePixel = bmp.sublist(
+        final oppositePixel = bmp.sublist(
           oppositePixelStart,
           oppositePixelEnd,
         );
-        final Uint8List targetPixel = bmp.sublist(pixelStart, pixelEnd);
+        final targetPixel = bmp.sublist(pixelStart, pixelEnd);
 
-        bmp.setRange(oppositePixelStart, oppositePixelEnd, targetPixel);
-        bmp.setRange(pixelStart, pixelEnd, oppositePixel);
+        bmp
+          ..setRange(oppositePixelStart, oppositePixelEnd, targetPixel)
+          ..setRange(pixelStart, pixelEnd, oppositePixel);
       }
     }
   }
@@ -65,10 +64,10 @@ class _VerticalFlip implements _Flip {
 class _HorizontalFlip implements _Flip {
   @override
   Bitmap flip(Bitmap bitmap) {
-    final Bitmap copy = bitmap.cloneHeadless();
+    final copy = bitmap.cloneHeadless();
     final width = bitmap.width;
     final height = bitmap.height;
-    final Uint8List copyContent = copy.content;
+    final copyContent = copy.content;
 
     _horizontalFlipCore(copyContent, width, height);
 
@@ -76,32 +75,33 @@ class _HorizontalFlip implements _Flip {
   }
 
   void _horizontalFlipCore(Uint8List bmp, int width, int height) {
-    const pixelLength = RGBA32BitmapHeader.pixelLength;
+    const pixelLength = RGBA32BitmapHeader.kPixelLength;
 
-    final int lineLength = width * pixelLength;
-    final int halfLine = lineLength ~/ 2;
+    final lineLength = width * pixelLength;
+    final halfLine = lineLength ~/ 2;
 
-    for (int line = 0; line < height; line++) {
-      final int startOfLine = line * lineLength;
-      for (int relativeColumnStart = 0;
+    for (var line = 0; line < height; line++) {
+      final startOfLine = line * lineLength;
+      for (var relativeColumnStart = 0;
           relativeColumnStart < halfLine;
           relativeColumnStart += pixelLength) {
-        final int pixelStart = startOfLine + relativeColumnStart;
-        final int pixelEnd = pixelStart + pixelLength;
+        final pixelStart = startOfLine + relativeColumnStart;
+        final pixelEnd = pixelStart + pixelLength;
 
-        final int relativeOppositePixelStart =
+        final relativeOppositePixelStart =
             lineLength - relativeColumnStart - pixelLength;
-        final int oppositePixelStart = startOfLine + relativeOppositePixelStart;
-        final int oppositePixelEnd = oppositePixelStart + pixelLength;
+        final oppositePixelStart = startOfLine + relativeOppositePixelStart;
+        final oppositePixelEnd = oppositePixelStart + pixelLength;
 
-        final Uint8List oppositePixel = bmp.sublist(
+        final oppositePixel = bmp.sublist(
           oppositePixelStart,
           oppositePixelEnd,
         );
-        final Uint8List targetPixel = bmp.sublist(pixelStart, pixelEnd);
+        final targetPixel = bmp.sublist(pixelStart, pixelEnd);
 
-        bmp.setRange(oppositePixelStart, oppositePixelEnd, targetPixel);
-        bmp.setRange(pixelStart, pixelEnd, oppositePixel);
+        bmp
+          ..setRange(oppositePixelStart, oppositePixelEnd, targetPixel)
+          ..setRange(pixelStart, pixelEnd, oppositePixel);
       }
     }
   }

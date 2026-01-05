@@ -1,12 +1,12 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import '../bitmap.dart';
-import '../ffi.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/ffi.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
 // *** FFi C++ bindings ***
-const _nativeFunctionName = "contrast";
+const _nativeFunctionName = 'contrast';
 
 typedef _NativeSideFunction = ffi.Void Function(
   ffi.Pointer<ffi.Uint8>,
@@ -26,19 +26,19 @@ _DartSideFunction _contrastFFIImpl = bitmapFFILib
 
 /// Sets a contrast of in image given [contrastFactor].
 class BitmapContrast implements BitmapOperation {
-  BitmapContrast(this.contrastFactor) : assert(contrastFactor >= 0.0);
+  BitmapContrast(this.contrastFactor)
+      : assert(contrastFactor >= 0.0, 'contrastFactor must be >= 0.0');
 
   double contrastFactor;
 
   @override
   Bitmap applyTo(Bitmap bitmap) {
-    final Bitmap copy = bitmap.cloneHeadless();
+    final copy = bitmap.cloneHeadless();
     _contrastCore(copy.content, contrastFactor);
     return copy;
   }
 
   void _contrastCore(Uint8List sourceBmp, double contrastRate) {
-    assert(contrastRate >= 0.0);
     final size = sourceBmp.length;
     FFIImpl((startingPointer, pointerList) {
       _contrastFFIImpl(startingPointer, size, contrastRate);

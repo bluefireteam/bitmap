@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:bitmap/src/operation/operation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/rendering.dart';
 
-import 'operation/operation.dart';
-
-class Bitmap {
-  Bitmap.fromHeadless(this.width, this.height, this.content);
+class Bitmap extends Equatable {
+  const Bitmap.fromHeadless(this.width, this.height, this.content);
 
   Bitmap.fromHeadful(this.width, this.height, Uint8List headedIntList)
       : content = headedIntList.sublist(
-          RGBA32BitmapHeader.RGBA32HeaderSize,
+          RGBA32BitmapHeader.kRGBA32HeaderSize,
           headedIntList.length,
         );
 
@@ -19,7 +19,7 @@ class Bitmap {
     this.width,
     this.height,
   ) : content = Uint8List.fromList(
-          List.filled(width * height * RGBA32BitmapHeader.pixelLength, 0),
+          List.filled(width * height * RGBA32BitmapHeader.kPixelLength, 0),
         );
 
   /// The width in pixels of the image.
@@ -31,7 +31,7 @@ class Bitmap {
   /// A [Uint8List] of bytes in a RGBA format.
   final Uint8List content;
 
-  int get size => (width * height) * RGBA32BitmapHeader.pixelLength;
+  int get size => (width * height) * RGBA32BitmapHeader.kPixelLength;
 
   // Creates a new instance of bitmap
   Bitmap cloneHeadless() {
@@ -43,8 +43,8 @@ class Bitmap {
   }
 
   static Future<Bitmap> fromProvider(ImageProvider provider) async {
-    final Completer completer = Completer<ImageInfo>();
-    final ImageStream stream = provider.resolve(const ImageConfiguration());
+    final completer = Completer<ImageInfo>();
+    final stream = provider.resolve(ImageConfiguration.empty);
     final listener = ImageStreamListener(
       (ImageInfo info, bool synchronousCall) {
         if (!completer.isCompleted) {
@@ -54,23 +54,21 @@ class Bitmap {
     );
     stream.addListener(listener);
     final imageInfo = await completer.future;
-    final ui.Image image = imageInfo.image;
-    final ByteData? byteData = await image.toByteData();
+    final image = imageInfo.image;
+    final byteData = await image.toByteData();
     if (byteData == null) {
       throw StateError("Couldn't serialize image into bytes");
     }
 
-    final Uint8List listInt = byteData.buffer.asUint8List();
+    final listInt = byteData.buffer.asUint8List();
 
     return Bitmap.fromHeadless(image.width, image.height, listInt);
   }
 
   Future<ui.Image> buildImage() async {
-    final Completer<ui.Image> imageCompleter = Completer();
+    final imageCompleter = Completer<ui.Image>();
     final headedContent = buildHeaded();
-    ui.decodeImageFromList(headedContent, (ui.Image img) {
-      imageCompleter.complete(img);
-    });
+    ui.decodeImageFromList(headedContent, imageCompleter.complete);
     return imageCompleter.future;
   }
 
@@ -85,7 +83,7 @@ class Bitmap {
   }
 
   Bitmap applyBatch(List<BitmapOperation> operations) {
-    Bitmap result = this;
+    var result = this;
     for (final operation in operations) {
       result = operation.applyTo(result);
     }
@@ -93,48 +91,38 @@ class Bitmap {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Bitmap &&
-          runtimeType == other.runtimeType &&
-          width == other.width &&
-          height == other.height &&
-          content == other.content;
-
-  @override
-  int get hashCode => width.hashCode ^ height.hashCode ^ content.hashCode;
+  List<Object?> get props => [width, height, content];
 }
 
 class RGBA32BitmapHeader {
-  static const int pixelLength = 4;
-  static const int RGBA32HeaderSize = 122;
-
   RGBA32BitmapHeader(this.contentSize, int width, int height) {
     headerIntList = Uint8List(fileLength);
 
-    final ByteData bd = headerIntList.buffer.asByteData();
-    bd.setUint8(0x0, 0x42);
-    bd.setUint8(0x1, 0x4d);
-    bd.setInt32(0x2, fileLength, Endian.little);
-    bd.setInt32(0xa, RGBA32HeaderSize, Endian.little);
-    bd.setUint32(0xe, 108, Endian.little);
-    bd.setUint32(0x12, width, Endian.little);
-    bd.setUint32(0x16, -height, Endian.little);
-    bd.setUint16(0x1a, 1, Endian.little);
-    bd.setUint32(0x1c, 32, Endian.little); // pixel size
-    bd.setUint32(0x1e, 3, Endian.little); //BI_BITFIELDS
-    bd.setUint32(0x22, contentSize, Endian.little);
-    bd.setUint32(0x36, 0x000000ff, Endian.little);
-    bd.setUint32(0x3a, 0x0000ff00, Endian.little);
-    bd.setUint32(0x3e, 0x00ff0000, Endian.little);
-    bd.setUint32(0x42, 0xff000000, Endian.little);
+    headerIntList.buffer.asByteData()
+      ..setUint8(0x0, 0x42)
+      ..setUint8(0x1, 0x4d)
+      ..setInt32(0x2, fileLength, Endian.little)
+      ..setInt32(0xa, kRGBA32HeaderSize, Endian.little)
+      ..setUint32(0xe, 108, Endian.little)
+      ..setUint32(0x12, width, Endian.little)
+      ..setUint32(0x16, -height, Endian.little)
+      ..setUint16(0x1a, 1, Endian.little)
+      ..setUint32(0x1c, 32, Endian.little) // pixel size
+      ..setUint32(0x1e, 3, Endian.little) //BI_BITFIELDS
+      ..setUint32(0x22, contentSize, Endian.little)
+      ..setUint32(0x36, 0x000000ff, Endian.little)
+      ..setUint32(0x3a, 0x0000ff00, Endian.little)
+      ..setUint32(0x3e, 0x00ff0000, Endian.little)
+      ..setUint32(0x42, 0xff000000, Endian.little);
   }
+  static const int kPixelLength = 4;
+  static const int kRGBA32HeaderSize = 122;
 
   int contentSize;
 
   void applyContent(Uint8List contentIntList) {
     headerIntList.setRange(
-      RGBA32HeaderSize,
+      kRGBA32HeaderSize,
       fileLength,
       contentIntList,
     );
@@ -142,5 +130,5 @@ class RGBA32BitmapHeader {
 
   late Uint8List headerIntList;
 
-  int get fileLength => contentSize + RGBA32HeaderSize;
+  int get fileLength => contentSize + kRGBA32HeaderSize;
 }

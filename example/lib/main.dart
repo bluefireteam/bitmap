@@ -4,9 +4,11 @@ import 'package:bitmap/bitmap_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -15,26 +17,32 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: MyHomePage(
-        title: "Pans",
+      home: const MyHomePage(
+        title: 'Pans',
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({
-    Key? key,
+  const MyHomePage({
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('title', title));
+  }
+
+  @override
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   ImageValueNotifier imageValueNotifier = ImageValueNotifier();
 
   @override
@@ -114,13 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
               return Column(
                 children: <Widget>[
                   SafeArea(
-                    top: true,
                     child: Image.memory(
                       bitmap.buildHeaded(),
                     ),
                   ),
-                  const Text("Tap image to reset"),
-                  Text("ImageSize ${bitmap.width}"),
+                  const Text('Tap image to reset'),
+                  Text('ImageSize ${bitmap.width}'),
                 ],
               );
             },
@@ -138,6 +145,17 @@ class _MyHomePageState extends State<MyHomePage> {
         adjustColorImage: adjustColorImage,
         batchOperations: batchOperations,
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+      DiagnosticsProperty<ImageValueNotifier>(
+        'imageValueNotifier',
+        imageValueNotifier,
+      ),
     );
   }
 }
@@ -178,21 +196,21 @@ class Buttons extends StatelessWidget {
               TextButton(
                 onPressed: flipHImage,
                 child: const Text(
-                  "Flip horizontal",
+                  'Flip horizontal',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
               TextButton(
                 onPressed: flipVImage,
                 child: const Text(
-                  "Flip vertical",
+                  'Flip vertical',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
               TextButton(
                 onPressed: contrastImage,
                 child: const Text(
-                  "Contrast +",
+                  'Contrast +',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
@@ -203,14 +221,14 @@ class Buttons extends StatelessWidget {
               TextButton(
                 onPressed: brightnessImage,
                 child: const Text(
-                  "Brightness +",
+                  'Brightness +',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
               TextButton(
                 onPressed: adjustColorImage,
                 child: const Text(
-                  "AdjustColor +",
+                  'AdjustColor +',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
@@ -221,21 +239,21 @@ class Buttons extends StatelessWidget {
               TextButton(
                 onPressed: rotateClockwiseImage,
                 child: const Text(
-                  "Rotate Clock +",
+                  'Rotate Clock +',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
               TextButton(
                 onPressed: rotateCounterClockwiseImage,
                 child: const Text(
-                  "Rotate Clock -",
+                  'Rotate Clock -',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
               TextButton(
                 onPressed: rotate180Image,
                 child: const Text(
-                  "Rotate 180",
+                  'Rotate 180',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
@@ -246,13 +264,58 @@ class Buttons extends StatelessWidget {
               TextButton(
                 onPressed: batchOperations,
                 child: const Text(
-                  "Batch operations (saturation + crop)",
+                  'Batch operations (saturation + crop)',
                   style: TextStyle(fontSize: 10),
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        ..add(ObjectFlagProperty<VoidCallback>.has('flipHImage', flipHImage))
+    
+        ..add(ObjectFlagProperty<VoidCallback>.has('flipVImage', flipVImage))
+    ..add(
+      ObjectFlagProperty<VoidCallback>.has(
+        'rotateClockwiseImage',
+        rotateClockwiseImage,
+      ),
+    )
+    ..add(
+      ObjectFlagProperty<VoidCallback>.has(
+        'rotateCounterClockwiseImage',
+        rotateCounterClockwiseImage,
+      ),
+    )
+      ..add(
+      ObjectFlagProperty<VoidCallback>.has('rotate180Image', rotate180Image),
+    )
+    ..add(
+      ObjectFlagProperty<VoidCallback>.has('contrastImage', contrastImage),
+    )
+    ..add(
+      ObjectFlagProperty<VoidCallback>.has(
+        'brightnessImage',
+        brightnessImage,
+      ),
+    )
+    ..add(
+      ObjectFlagProperty<VoidCallback>.has(
+        'adjustColorImage',
+        adjustColorImage,
+      ),
+    )
+    ..add(
+      ObjectFlagProperty<VoidCallback>.has(
+        'batchOperations',
+        batchOperations,
       ),
     );
   }
@@ -269,7 +332,7 @@ class ImageValueNotifier extends ValueNotifier<Bitmap?> {
   }
 
   Future<void> loadImage() async {
-    const ImageProvider imageProvider = const AssetImage("assets/street.jpg");
+    const ImageProvider imageProvider = AssetImage('assets/street.jpg');
 
     value = await Bitmap.fromProvider(imageProvider);
     initial = value!;
@@ -400,7 +463,6 @@ Future<Uint8List> flipVImageIsolate(List<dynamic> imageData) async {
   final width = imageData[1] as int;
   final height = imageData[2] as int;
 
-
   final bigBitmap = Bitmap.fromHeadless(width, height, byteData);
 
   final returnBitmap = bigBitmap.apply(BitmapFlip.vertical());
@@ -420,7 +482,9 @@ Future<Uint8List> rotateClockwiseImageIsolate(List<dynamic> imageData) async {
   return returnBitmap.content;
 }
 
-Future<Uint8List> rotateCounterClockwiseImageIsolate(List<dynamic> imageData) async {
+Future<Uint8List> rotateCounterClockwiseImageIsolate(
+  List<dynamic> imageData,
+) async {
   final byteData = imageData[0] as Uint8List;
   final width = imageData[1] as int;
   final height = imageData[2] as int;
@@ -433,7 +497,7 @@ Future<Uint8List> rotateCounterClockwiseImageIsolate(List<dynamic> imageData) as
 }
 
 Future<Uint8List> rotate180ImageIsolate(List<dynamic> imageData) async {
-    final byteData = imageData[0] as Uint8List;
+  final byteData = imageData[0] as Uint8List;
   final width = imageData[1] as int;
   final height = imageData[2] as int;
 

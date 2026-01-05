@@ -1,4 +1,4 @@
-import '../bitmap.dart';
+import 'package:bitmap/src/bitmap.dart';
 
 export 'adjust_color.dart';
 export 'brightness.dart';

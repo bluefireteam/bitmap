@@ -15,6 +15,9 @@ analyzer:
   exclude:
     - lib/generated_plugin_registrant.dart
 
+formatter:
+  trailing_commas: preserve
+
 linter:
   rules:
     - always_declare_return_types
@@ -36,7 +39,6 @@ linter:
     - avoid_multiple_declarations_per_line
     - avoid_positional_boolean_parameters
     - avoid_print
-    - avoid_private_typedef_functions
     - avoid_redundant_argument_values
     - avoid_relative_lib_imports
     - avoid_renaming_method_parameters
@@ -107,7 +109,6 @@ linter:
     - null_check_on_nullable_type_parameter
     - null_closures
     - omit_local_variable_types
-    - one_member_abstracts
     - only_throw_errors
     - overridden_fields
     - package_names
@@ -209,3 +210,15 @@ linter:
     - use_to_and_as_if_applicable
     - valid_regexps
     - void_checks
+    - deprecated_member_use_from_same_package
+    - diagnostic_describe_all_properties
+    - no_literal_bool_comparisons
+    - prefer_foreach
+    - require_trailing_commas
+    - switch_on_type
+    - unnecessary_ignore
+    - unnecessary_null_aware_operator_on_extension_on_nullable
+    - unnecessary_unawaited
+    - unreachable_from_main
+    - use_null_aware_elements
+    - use_truncating_division

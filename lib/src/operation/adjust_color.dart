@@ -1,12 +1,12 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import '../bitmap.dart';
-import '../ffi.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/ffi.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
 // *** FFi C++ bindings ***
-const _nativeFunctionName = "adjust_color";
+const _nativeFunctionName = 'adjust_color';
 
 typedef _NativeSideFunction = ffi.Void Function(
   ffi.Pointer<ffi.Uint8>,
@@ -43,10 +43,10 @@ class BitmapAdjustColor implements BitmapOperation {
     this.saturation,
   });
 
-  static const DEG_TO_RAD = 0.0174532925;
-  static const lumCoeffR = 0.2125;
-  static const lumCoeffG = 0.7154;
-  static const lumCoeffB = 0.0721;
+  static const kDegToRad = 0.0174532925;
+  static const kLumCoeffR = 0.2125;
+  static const kLumCoeffG = 0.7154;
+  static const kLumCoeffB = 0.0721;
 
   /// Enhancement factor of the dark parts of an image
   int? blacks;
@@ -62,7 +62,7 @@ class BitmapAdjustColor implements BitmapOperation {
 
   @override
   Bitmap applyTo(Bitmap bitmap) {
-    final Bitmap copy = bitmap.cloneHeadless();
+    final copy = bitmap.cloneHeadless();
     _adjustColorCore(
       copy.content,
     );

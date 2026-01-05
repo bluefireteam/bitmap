@@ -9,9 +9,10 @@ environment:
   flutter: ">=3.13.9"
 
 dependencies:
+  equatable: ^2.0.8
+  ffi: ^2.1.0
   flutter:
     sdk: flutter
-  ffi: ^2.1.0
 
 dev_dependencies:
   flutter_test:

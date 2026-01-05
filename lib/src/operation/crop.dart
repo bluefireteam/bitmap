@@ -1,20 +1,22 @@
 import 'dart:typed_data';
 
-import '../bitmap.dart';
-import 'operation.dart';
+import 'package:bitmap/src/bitmap.dart';
+import 'package:bitmap/src/operation/operation.dart';
 
-/// Crops the source bitmap to rectangle defined by [top], [left], [width] and [height].
+/// Crops the source bitmap to rectangle defined by [top], [left], 
+/// [width] and [height].
 class BitmapCrop extends BitmapOperation {
-  /// Crops the source bitmap to rectangle defined by top, left, width and height.
+  /// Crops the source bitmap to rectangle defined by top,
+  /// left, width and height.
   BitmapCrop.fromLTWH({
     required this.left,
     required this.top,
     required this.width,
     required this.height,
-  })  : assert(left >= 0),
-        assert(top >= 0),
-        assert(width > 0),
-        assert(height > 0);
+  })  : assert(left >= 0, 'left must be >= 0'),
+        assert(top >= 0, 'top must be >= 0'),
+        assert(width > 0, 'width must be > 0'),
+        assert(height > 0, 'height must be > 0');
 
   BitmapCrop.fromLTRB({
     required this.left,
@@ -31,12 +33,18 @@ class BitmapCrop extends BitmapOperation {
 
   @override
   Bitmap applyTo(Bitmap bitmap) {
-    assert(left + width <= bitmap.width);
-    assert(top + height <= bitmap.height);
+    assert(
+      left + width <= bitmap.width,
+      'left + width must be <= bitmap.width',
+    );
+    assert(
+      top + height <= bitmap.height,
+      'top + height must be <= bitmap.height',
+    );
 
-    final int newBitmapSize = width * height * RGBA32BitmapHeader.pixelLength;
+    final newBitmapSize = width * height * RGBA32BitmapHeader.kPixelLength;
 
-    final Bitmap cropped = Bitmap.fromHeadless(
+    final cropped = Bitmap.fromHeadless(
       width,
       height,
       Uint8List(newBitmapSize),
@@ -65,10 +73,10 @@ class BitmapCrop extends BitmapOperation {
     int width,
     int height,
   ) {
-    const pixelLength = RGBA32BitmapHeader.pixelLength;
+    const pixelLength = RGBA32BitmapHeader.kPixelLength;
 
-    for (int x = left * pixelLength; x < (left + width) * pixelLength; x++) {
-      for (int y = top; y < (top + height); y++) {
+    for (var x = left * pixelLength; x < (left + width) * pixelLength; x++) {
+      for (var y = top; y < (top + height); y++) {
         destBmp[x - left * pixelLength + (y - top) * width * pixelLength] =
             sourceBmp[x + y * sourceWidth * pixelLength];
       }

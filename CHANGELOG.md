@@ -1,3 +1,9 @@
+## 0.3.0
+
+* Upgrade gradle for Android 16kb Page size Google requirement
+* Modernize internal code which may result on very speicif public API changes
+
+
 ## 0.2.0
 
 * fix: Add support for android gradle version 8.1.3

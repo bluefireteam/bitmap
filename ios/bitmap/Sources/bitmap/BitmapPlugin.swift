@@ -1,10 +1,10 @@
 import Flutter
 import UIKit
 
-public class SwiftBitmapPlugin: NSObject, FlutterPlugin {
+public class BitmapPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "bitmap", binaryMessenger: registrar.messenger())
-    let instance = SwiftBitmapPlugin()
+    let instance = BitmapPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

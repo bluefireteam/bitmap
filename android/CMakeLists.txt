@@ -6,4 +6,4 @@ add_library( bitmap
              SHARED
 
              # Provides a relative path to your source file(s).
-             ../ios/Classes/bitmap.cpp )
+             ../ios/bitmap/Sources/bitmap_cpp/bitmap.cpp )

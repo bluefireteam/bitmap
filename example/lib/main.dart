@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bitmap/bitmap_flutter.dart';
+import 'package:bitmap/bitmap.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -279,45 +279,44 @@ class Buttons extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-        ..add(ObjectFlagProperty<VoidCallback>.has('flipHImage', flipHImage))
-    
-        ..add(ObjectFlagProperty<VoidCallback>.has('flipVImage', flipVImage))
-    ..add(
-      ObjectFlagProperty<VoidCallback>.has(
-        'rotateClockwiseImage',
-        rotateClockwiseImage,
-      ),
-    )
-    ..add(
-      ObjectFlagProperty<VoidCallback>.has(
-        'rotateCounterClockwiseImage',
-        rotateCounterClockwiseImage,
-      ),
-    )
+      ..add(ObjectFlagProperty<VoidCallback>.has('flipHImage', flipHImage))
+      ..add(ObjectFlagProperty<VoidCallback>.has('flipVImage', flipVImage))
       ..add(
-      ObjectFlagProperty<VoidCallback>.has('rotate180Image', rotate180Image),
-    )
-    ..add(
-      ObjectFlagProperty<VoidCallback>.has('contrastImage', contrastImage),
-    )
-    ..add(
-      ObjectFlagProperty<VoidCallback>.has(
-        'brightnessImage',
-        brightnessImage,
-      ),
-    )
-    ..add(
-      ObjectFlagProperty<VoidCallback>.has(
-        'adjustColorImage',
-        adjustColorImage,
-      ),
-    )
-    ..add(
-      ObjectFlagProperty<VoidCallback>.has(
-        'batchOperations',
-        batchOperations,
-      ),
-    );
+        ObjectFlagProperty<VoidCallback>.has(
+          'rotateClockwiseImage',
+          rotateClockwiseImage,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has(
+          'rotateCounterClockwiseImage',
+          rotateCounterClockwiseImage,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has('rotate180Image', rotate180Image),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has('contrastImage', contrastImage),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has(
+          'brightnessImage',
+          brightnessImage,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has(
+          'adjustColorImage',
+          adjustColorImage,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has(
+          'batchOperations',
+          batchOperations,
+        ),
+      );
   }
 }
 
